@@ -10,25 +10,7 @@ const registerInitial = async (req, res) => {
     
     const { email, password, userType } = req.body;
 
-    let user
-    try {
-        user = await User.create({ email, password, userType, status: STATUS.UNVERIFIED });
-    } catch (error) {
-        // if (error.name === 'ValidationError') {
-        //     const messages = Object.values(error.errors).map(e => e.message).join(', ');
-        //     throw new APIError(StatusCodes.BAD_REQUEST, messages);
-        // }
-        // throw error;
-        if (error.code === 11000) {
-
-            throw new APIError(StatusCodes.BAD_REQUEST, `${error.keyValue.email} Email Already exists`);
-        }
-        // else if (error.name = "Validation") {
-        else {
-            const messages = Object.values(error.errors).map(e => e.message).join(', ');
-            throw new APIError(StatusCodes.BAD_REQUEST, messages);
-        }
-    }
+    const user = await User.create({ email, password, userType, status: STATUS.UNVERIFIED });
 
     const token = user.createJWT(STATUS.UNVERIFIED);
 
@@ -45,13 +27,7 @@ const registerComplete = async (req, res) => {
 
     const { userId, status, type } = req.user;
 
-    let user;
-    try {
-        user = await User.findById(userId);
-    } catch (error) {
-        const messages = Object.values(error.errors).map(e => e.message).join(', ');
-        throw new APIError(StatusCodes.BAD_REQUEST, messages);
-    }
+    const user = await User.findById(userId);
 
     if (!user) {
         throw new APIError(StatusCodes.UNAUTHORIZED, "Invalid User");
@@ -71,15 +47,10 @@ const registerComplete = async (req, res) => {
             throw new APIError(StatusCodes.BAD_REQUEST, "At least one skill is required");
         }
 
-        try {
-            await User.findByIdAndUpdate(userId,
-                { fullName, contactEmail, skills, linkedlnURL, bio },
-                { new: true, runValidators: true }
-            );
-        } catch (error) {
-            const messages = Object.values(error.errors).map(e => e.message).join(', ');
-            throw new APIError(StatusCodes.BAD_REQUEST, messages);
-        }
+        await User.findByIdAndUpdate(userId,
+            { fullName, contactEmail, skills, linkedlnURL, bio, status:STATUS.VERIFIED },
+            { new: true, runValidators: true }
+        );
 
     } else if (type === USERTYPE.ORG) {
         if (!orgName) {
@@ -89,15 +60,10 @@ const registerComplete = async (req, res) => {
             throw new APIError(StatusCodes.BAD_REQUEST, "Please provide a phone number");
         }
 
-        try {
-            await User.findByIdAndUpdate(userId,
-                { orgName, contactEmail, phone, websiteURL, bio },
-                { new: true, runValidators: true }
-            );
-        } catch (error) {
-            const messages = Object.values(error.errors).map(e => e.message).join(', ');
-            throw new APIError(StatusCodes.BAD_REQUEST, messages);
-        }
+        await User.findByIdAndUpdate(userId,
+            { orgName, contactEmail, phone, websiteURL, bio, status:STATUS.VERIFIED },
+            { new: true, runValidators: true }
+        );
     }
 
     res.status(StatusCodes.OK).json({ msg: "User created successfully" });
@@ -111,13 +77,7 @@ const login = async (req, res) => {
         throw new APIError(StatusCodes.BAD_REQUEST, "Please prove email and password");
     }
 
-    let user;
-    try {
-        user = await User.findOne({ email });
-    } catch (error) {
-        const messages = Object.values(error.errors).map(e => e.message).join(', ');
-        throw new APIError(StatusCodes.BAD_REQUEST, messages);
-    }
+    const user = await User.findOne({ email });
 
     if (!user) {
         throw new APIError(StatusCodes.UNAUTHORIZED, "Invalid Credentials");
