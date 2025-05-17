@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Organisation Profile | EvaluX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/tailwind.css" />
+  <style>
+    button:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center relative">
+    <!-- Glowing Circles -->
+    <div
+      class="absolute top-0 left-0 w-80 h-80 bg-cyan-500 rounded-full mix-blend-screen blur-3xl opacity-30 animate-pulse"
+    ></div>
+    <div
+      class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen blur-2xl opacity-30 animate-pulse"
+    ></div>
+    <div class="relative z-10 w-full max-w-2xl">
+        <h2 class="text-3xl font-semibold mb-8 text-cyan-400 text-center">Complete Your Profile</h2>
+
+        <form class="bg-gray-900 p-8 rounded-lg shadow-lg space-y-6" novalidate>
+            <!-- Name -->
+            <div>
+              <label for="full-name" class="block mb-2 font-semibold text-gray-300">
+                Organisation / Institution Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="org-name"
+              name="org-name"
+              required
+              class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+              />
+            </div>
+      
+            <!-- Email -->
+            <div>
+                <label for="contact-email" class="block mb-2 font-semibold text-gray-300">
+                    Contact Email <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="email"
+                    id="contact-email"
+                    name="contact-email"
+                    required
+                    class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+                />
+            </div>
+      
+            <!-- Phone -->
+            <div>
+                <label for="phone" class="block mb-2 font-semibold text-gray-300">
+                    Phone Number <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    required
+                    pattern="[+0-9\s-]{7,15}"
+                    title="Enter a valid phone number"
+                    class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+                />
+            </div>
+      
+            <!-- Website URL -->
+            <div>
+                <label for="website" class="block mb-2 font-semibold text-gray-400 italic">
+                    Website URL <span class="text-gray-400">(Optional)</span>
+                </label>
+                <input
+                    type="url"
+                    id="website"
+                    name="website"
+                    class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+                />
+            </div>
+      
+            <!-- Brief Description / Bio -->
+            <div>
+                <label for="description" class="block mb-2 font-semibold text-gray-400 italic">
+                    Brief Description / Bio <span class="text-gray-400">(Optional)</span>
+                </label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="4"
+                    class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 resize-y focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+                ></textarea>
+            </div>
+      
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="w-full py-3 rounded-full bg-cyan-400 text-black font-semibold hover:bg-cyan-500 transition-shadow shadow-md shadow-cyan-400 hover:shadow-lg"
+            >
+              Save Profile
+            </button>
+        </form>
+    </div>
+</body>
+</html>
