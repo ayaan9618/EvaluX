@@ -163,13 +163,51 @@
     <!-- Main Layout -->
     <div class="flex pt-20 h-[calc(100vh-5rem)]">
       <!-- Left Sidebar -->
-      <aside class="w-48 bg-cyan-400 p-4 flex flex-col justify-between">
-        <div>
+      <aside
+        class="w-64 bg-cyan-500 text-white flex flex-col p-4 rounded-tr-3xl rounded-br-3xl shadow-lg"
+      >
+        <!-- Title -->
+        <h2 class="text-xl font-bold mb-4">My Courses</h2>
+
+        <!-- Scrollable Course List -->
+        <div class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+          <!-- Course Item -->
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">Intro to AI</p>
+            <p class="text-sm text-white/80">by John Doe</p>
+          </div>
+
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">React for Beginners</p>
+            <p class="text-sm text-white/80">by Jane Smith</p>
+          </div>
+
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">ML Project Evaluator</p>
+            <p class="text-sm text-white/80">by Ankit Patel</p>
+          </div>
+
+          <!-- Duplicate and add more as needed -->
+        </div>
+
+        <!-- Bottom Fixed Buttons -->
+        <div class="pt-4 mt-4 border-t border-white/30 space-y-2">
           <button
-            class="mt-6 bg-white text-black font-semibold py-2 px-4 rounded shadow hover:bg-gray-100"
+            class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
           >
             Add Course
           </button>
+          <!-- <button
+            class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
+          >
+            Manage Access
+          </button> -->
         </div>
       </aside>
 
@@ -193,7 +231,7 @@
           <template id="card-template">
             <div class="bg-gray-900 p-3 rounded-2xl shadow-md">
               <img
-                src="./public/assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
+                src="assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
                 alt="Course"
                 class="w-full h-32 object-cover rounded-md mb-3"
               />
@@ -208,28 +246,11 @@
               </div>
             </div>
           </template>
-          <template id="card-template">
-            <div class="bg-gray-900 p-3 rounded-2xl shadow-md">
-              <img
-                src="./public/assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
-                alt="Course"
-                class="w-full h-32 object-cover rounded-md mb-3"
-              />
-              <div class="text-sm leading-snug">
-                <p>Abandoned places finder</p>
-                <p>Course ID: 128904</p>
-                <p>
-                  <span class="font-semibold">Status:</span>
-                  <span class="text-green-500" >Approved</span> 
-                </p>
-                <p>Date: 23/03/24</p>
-              </div>
-            </div>
-          </template>
+          
           <template id="card-template2">
             <div class="bg-gray-900 p-3 rounded-2xl shadow-md">
               <img
-                src="./public/assets/images/code.png"
+                src="assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
                 alt="Course"
                 class="w-full h-32 object-cover rounded-md mb-3"
               />
