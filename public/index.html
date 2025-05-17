@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="EvaluX helps ed-tech platforms verify learner submissions and issue real certificates with confidence." />
+  <meta name="keywords" content="EvaluX, ed-tech, certificate verification, project validation, AI skills" />
+  <meta name="author" content="EvaluX" />
+
+  <title>EvaluX |Empowering Authentic Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    /> -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="./styles/tailwind.css" />
+
+  <style>
+    body {
+      /* font-family: "Space Grotesk", sans-serif; */
+      font-family: "IBM Plex Mono", sans-serif;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradientMove 6s ease infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-black via-gray-900 to-gray-950 text-white min-h-screen">
+  <!-- NAVBAR -->
+  <header
+    class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/5 border-b border-white/10 shadow-md">
+    <h1 class="text-2xl font-bold text-cyan-400">EvaluX</h1>
+    <nav class="hidden md:flex space-x-8 text-sm font-semibold items-center">
+      <a href="#features" class="hover:text-cyan-400 transition">Features</a>
+      <a href="#workflow" class="hover:text-cyan-400 transition">Workflow</a>
+      <a href="#solutions" class="hover:text-cyan-400 transition">Solutions</a>
+      <a href="./signup.html"
+        class="px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold transition">Start Free</a>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section
+    class="relative flex items-center justify-center min-h-screen overflow-hidden px-6 text-center bg-gradient-to-br from-gray-950 via-black to-gray-900">
+    <!-- Ambient Glow Background Circles -->
+    <div
+      class="absolute top-0 left-0 w-80 h-80 bg-cyan-500 rounded-full mix-blend-screen blur-3xl opacity-30 animate-pulse">
+    </div>
+    <div
+      class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen blur-2xl opacity-30 animate-pulse">
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 max-w-4xl mx-auto" data-aos="zoom-in" data-aos-duration="1200">
+      <h1
+        class="text-5xl md:text-7xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
+        Validate Skills, Authentically.
+      </h1>
+      <p class="mt-6 text-lg md:text-xl text-gray-300">
+        EvaluX empowers ed-tech platforms to verify student submissions with
+        AI-driven precision & trust.
+      </p>
+      <div class="mt-10 flex justify-center gap-4">
+        <a href="./signup.html"
+          class="px-8 py-3 text-lg font-semibold bg-cyan-500 text-black rounded-full shadow-md hover:bg-cyan-600 transition-all">
+          🚀 Get Early Access
+        </a>
+        <a href="#features"
+          class="px-8 py-3 text-lg font-semibold border border-gray-600 rounded-full hover:border-cyan-400 transition">
+          Learn More ↓
+        </a>
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>
