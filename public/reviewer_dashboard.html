@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reviewer Dashboard | EvaluX</title>
+    <link rel="stylesheet" href="./styles/tailwind.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <style>
+            body {
+            /* font-family: "Space Grotesk", sans-serif; */
+            font-family: "IBM Plex Mono", sans-serif;    
+            }
+        </style>
+</head>
+
+<body class="bg-gray-950 text-white font-sans min-h-screen overflow-hidden">
+    <div class="grid grid-rows-[auto_1fr] h-full">
+
+        <!-- Top Navbar -->
+        <header
+            class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/5 border-b border-white/10 shadow-md">
+            <h1 class="text-2xl font-bold text-cyan-400">EvaluX</h1>
+            <!-- Profile Dropdown -->
+            <div class="relative" id="profileDropdownWrapper">
+                <button id="profileBtn"
+                    class="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition">
+                    <img src="https://www.svgrepo.com/show/452030/avatar-default.svg" alt="Profile"
+                        class="w-9 h-9 rounded-full border border-cyan-400" />
+                    <svg class="w-4 h-4 text-cyan-400 transition-transform duration-200"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="profileMenu"
+                    class="hidden absolute right-0 mt-3 w-48 bg-white text-black dark:bg-zinc-900 dark:text-white rounded-xl shadow-lg ring-1 ring-black/5 z-50">
+                    <a href="/profile"
+                        class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-t-xl">👤
+                        Profile</a>
+                    <a href="/dashboard" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">🧭
+                        Dashboard</a>
+                    <a href="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">⚙️
+                        Settings</a>
+                    <a href="/logout"
+                        class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-b-xl">🚪
+                        Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="grid grid-cols-5 gap-4 px-6 pt-[100px] pb-6 bg-gray-950 min-h-full">
+
+            <!-- Left Panel -->
+            <section class="col-span-3 bg-gray-900 rounded-xl p-5 shadow-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-cyan-400">📚 My Library</h2>
+                    <div class="space-x-2">
+                        <button onclick="filterProjects('all')"
+                            class="bg-white/10 px-3 py-1 rounded text-sm hover:bg-cyan-400 hover:text-black transition">All</button>
+                        <button onclick="filterProjects('Approved')"
+                            class="bg-white/10 px-3 py-1 rounded text-sm hover:bg-green-400 hover:text-black transition">Approved</button>
+                        <button onclick="filterProjects('Pending')"
+                            class="bg-white/10 px-3 py-1 rounded text-sm hover:bg-yellow-400 hover:text-black transition">Pending</button>
+                        <button onclick="filterProjects('Rejected')"
+                            class="bg-white/10 px-3 py-1 rounded text-sm hover:bg-red-400 hover:text-black transition">Rejected</button>
+                    </div>
+                </div>
+
+                <div id="projectList" class="space-y-4">
+                    <!-- Project 1 -->
+                    <div data-status="Pending" class="project bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold">EvaluX Submission</h3>
+                                <p class="text-sm text-gray-400">An internal tool to evaluate hackathon projects in
+                                    real-time.</p>
+                                <div class="mt-1 space-x-2">
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#App</span>
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#Tool</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Submitted on: May 17, 2025</p>
+                                <a href="project-panel.html">
+                                    <button
+                                        class="mt-3 bg-cyan-500 hover:bg-cyan-400 text-white text-sm px-3 py-1 rounded shadow transition">
+                                        View Project
+                                    </button>
+                                </a>
+                            </div>
+                            <span
+                                class="bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-semibold">Pending</span>
+                        </div>
+                    </div>
+                    <!-- Project 2 -->
+                    <div data-status="Approved" class="project bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold">Resume Scanner</h3>
+                                <p class="text-sm text-gray-400">A tool to parse and rate resumes using AI.</p>
+                                <div class="mt-1 space-x-2">
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#ML</span>
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#Parser</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Submitted on: May 15, 2025</p>
+                                <a href="project-panel.html">
+                                    <button
+                                        class="mt-3 bg-cyan-500 hover:bg-cyan-400 text-white text-sm px-3 py-1 rounded shadow transition">
+                                        View Project
+                                    </button>
+                                </a>
+                            </div>
+                            <span
+                                class="bg-green-400 text-black text-xs px-3 py-1 rounded-full font-semibold">Approved</span>
+                        </div>
+                    </div>
+                    <!-- Project 3 -->
+                    <div data-status="Rejected" class="project bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold">ML Grade Predictor</h3>
+                                <p class="text-sm text-gray-400">Predicts grades of students using ML algorithms.</p>
+                                <div class="mt-1 space-x-2">
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#ML</span>
+                                    <span class="text-xs bg-cyan-600 px-2 py-0.5 rounded">#Prediction</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Submitted on: May 14, 2025</p>
+                                <a href="project-panel.html">
+                                    <button
+                                        class="mt-3 bg-cyan-500 hover:bg-cyan-400 text-white text-sm px-3 py-1 rounded shadow transition">
+                                        View Project
+                                    </button>
+                                </a>
+                            </div>
+                            <span
+                                class="bg-red-400 text-black text-xs px-3 py-1 rounded-full font-semibold">Rejected</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-center">
+                    <a href="/index.html"
+                        class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition">
+                        + Review Projects
+                    </a>
+                </div>
+                  
+            </section>
+
+            <!-- Right Panel -->
+            <section class="col-span-2 bg-gray-900 rounded-xl p-6 shadow-md flex flex-col">
+                <h2 class="text-xl font-semibold text-cyan-400 mb-4">👤 Reviewer Info</h2>
+                <div class="flex items-center gap-4 mb-4">
+                    <img src="https://www.svgrepo.com/show/452030/avatar-default.svg" alt="Avatar"
+                        class="w-16 h-16 rounded-full border border-cyan-400" />
+                    <div>
+                        <p class="font-bold text-white text-lg">Abdul Samad</p>
+                        <p class="text-sm text-gray-400">Reviewer ID: #REV1023</p>
+                    </div>
+                </div>
+                <div class="space-y-1 text-sm text-gray-300 leading-relaxed mb-6">
+                    <p>📊 Projects Assigned: <span class="text-white font-semibold">10</span></p>
+                    <p>✅ Approved: <span class="text-green-400 font-semibold">6</span></p>
+                    <p>❌ Rejected: <span class="text-red-400 font-semibold">2</span></p>
+                    <p>🕐 Pending: <span class="text-yellow-400 font-semibold">2</span></p>
+                </div>
+
+                <!-- Donut Chart -->
+                <h2 class="text-lg font-semibold text-cyan-400 mb-2">📈 Project Stats</h2>
+                <canvas id="donutChart" class="w-full max-w-xs mx-auto mb-2"></canvas>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const btn = document.getElementById('profileBtn');
+        const menu = document.getElementById('profileMenu');
+        const wrapper = document.getElementById('profileDropdownWrapper');
+
+        btn.addEventListener('click', () => {
+            const isOpen = menu.classList.contains('block');
+            menu.classList.toggle('hidden', isOpen);
+            menu.classList.toggle('block', !isOpen);
+            btn.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                menu.classList.add('hidden');
+                menu.classList.remove('block');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                menu.classList.add('hidden');
+                menu.classList.remove('block');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        function filterProjects(status) {
+            document.querySelectorAll('.project').forEach((el) => {
+                el.style.display = (status === 'all' || el.dataset.status === status) ? 'block' : 'none';
+            });
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('donutChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Rejected', 'Pending'],
+                datasets: [{
+                    data: [6, 2, 2],
+                    backgroundColor: ['#22c55e', '#f43f5e', '#facc15'],
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: 'white' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                return ctx.label + ': ' + ctx.parsed + ' projects';
+                            }
+                        }
+                    }
+                },
+                cutout: '70%',
+            },
+            plugins: [{
+                id: 'totalCenterText',
+                beforeDraw(chart) {
+                    const { width, height, ctx } = chart;
+                    ctx.restore();
+                    ctx.font = 'bold 18px sans-serif';
+                    ctx.fillStyle = 'white';
+                    ctx.textBaseline = 'middle';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('10 Total', width / 2, height / 2);
+                    ctx.save();
+                }
+            }]
+        });
+    </script>
+</body>
+
+</html>
