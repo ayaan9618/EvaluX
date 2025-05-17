@@ -4,7 +4,7 @@ const { auth, verifyUserType } = require("../middleware/authentication");
 const verifyCourse = require("../middleware/verify-course-owner");
 //controller
 const { getProjectInCourse, addProject, getProjectById,
-    deleteProject, getAllProjects } = require("../controllers/projects");
+    deleteProject, getAllProjects, assessProject } = require("../controllers/projects");
 
 const { USERTYPE } = require("../db/enums");
 
@@ -15,8 +15,9 @@ router.route("/course/:course_id")
     .get(auth, verifyUserType(USERTYPE.ORG), verifyCourse, getProjectInCourse);
 router.route("/").get(auth, verifyUserType(USERTYPE.REVIEWER), getAllProjects);
 router.route("/:id")
-    .get(auth, getProjectById)
-    .delete(auth, verifyUserType(USERTYPE.ORG), verifyCourse, deleteProject);
+    .get(auth, getProjectById);
+router.route("/assess/:id")
+    .post(auth, verifyUserType(USERTYPE.REVIEWER), assessProject);
 router.route("/course/:course_id/:id")
     .delete(auth, verifyUserType(USERTYPE.ORG), verifyCourse, deleteProject);
 

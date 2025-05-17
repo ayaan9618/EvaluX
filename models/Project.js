@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { USERTYPE, STATUS, TESTED_STATUS } = require("../db/enums");
+const { USERTYPE, STATUS, TESTED_STATUS, PROJECT_STATUS } = require("../db/enums");
 
 const courseSchema = mongoose.Schema({
     author: {
@@ -47,10 +47,10 @@ const projectSchema = mongoose.Schema({
     },
     status: {
         type: String,
-        default: STATUS.UNVERIFIED,
+        default: PROJECT_STATUS.PENDING,
         enum: {
-            values: Object.values(STATUS),
-            message: "{VALUE} is not a valid status"
+            values: Object.values(PROJECT_STATUS),
+            message: "{VALUE} is not a valid project status"
         }
     },
     tested: {
@@ -66,7 +66,17 @@ const projectSchema = mongoose.Schema({
     timestamps: true
 });
 
+const SemgrepResultSchema = new mongoose.Schema({
+  projectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Project' },
+  summary: Object,
+  fullOutput: Object,
+},
+{
+    timestamps: true
+});
+
 const Course = mongoose.model("Course", courseSchema);
 const Project = mongoose.model("Project", projectSchema);
+const SemgrepResult = mongoose.model("ProjectAssessment", SemgrepResultSchema);
 
-module.exports = { Course, Project };
+module.exports = { Course, Project, SemgrepResult };
