@@ -48,4 +48,13 @@ const preUserAuth = async (req, res, next) => {
     next();
 }
 
-module.exports = { auth, preUserAuth };
+const verifyUserType = (type) => {
+    return (req, res, next) => {
+        if (req.user.type !== type) {
+            throw new APIError(StatusCodes.FORBIDDEN, "Not Allowed");
+        }
+        next();
+    }
+}
+
+module.exports = { auth, preUserAuth, verifyUserType };

@@ -7,6 +7,8 @@ const cors = require("cors");
 const { xss } = require("express-xss-sanitizer");
 
 const authRoutes = require("./routes/auth");
+const courseRoutes = require("./routes/courses");
+const projectRoutes = require("./routes/projects");
 
 const notFoundMiddleware = require("./middleware/not-found");
 const errorMiddleware = require("./middleware/error-handler");
@@ -24,6 +26,8 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Landing page
 app.get('/', (req, res) => {
