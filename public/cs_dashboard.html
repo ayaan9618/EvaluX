@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EvaluX Dashboard</title>
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- title -->
+    <link rel="stylesheet" href="./styles/tailwind.css" />
+    <style>
+        body {
+          font-family: "IBM Plex Mono", sans-serif;
+        }
+    </style>
+  </head>
+  <body class="bg-black text-white">
+    <!-- Top Header -->
+    <header
+      class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/5 border-b border-white/10 shadow-md"
+    >
+      <h1 class="text-2xl font-bold text-cyan-400">
+        Evalu<span class="text-[#ad46ff]">X</span>
+      </h1>
+
+      <!-- Profile Dropdown -->
+      <div class="relative" id="profileDropdownWrapper">
+        <button
+          id="profileBtn"
+          class="flex items-center gap-2 focus:outline-none z-50 relative"
+        >
+          <img
+            src="./assets/images/udemy-logo.png"
+            alt="Profile"
+            class="w-9 h-9 rounded-full border border-cyan-400"
+          />
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Profile Sidebar Dropdown Panel -->
+    <div
+      id="profileMenu"
+      class="hidden fixed right-0 top-[4.5rem] bottom-0 w-72 bg-white text-black dark:bg-zinc-900 dark:text-white rounded-l-xl shadow-lg ring-1 ring-black/5 z-40 overflow-y-auto pointer-events-auto"
+    >
+      <!-- Top Profile Info -->
+      <div
+        class="px-4 py-3 text-center border-b border-gray-300 dark:border-zinc-700"
+      >
+        <div class="w-14 h-14 mx-auto rounded-full overflow-hidden shadow-md">
+          <img
+            src="./assets/images/udemy-logo.png"
+            alt="Udemy Logo"
+            class="w-full h-full object-contain"
+          />
+        </div>
+        <p class="text-base font-bold mt-2">Udemy</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Inc — Business</p>
+        <!-- <p class="text-sm underline cursor-pointer">Contact</p> -->
+      </div>
+
+      <!-- Links -->
+      <div class="py-2 border-b border-gray-200 dark:border-zinc-700">
+        <a
+          href="/profile"
+          class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800"
+          >Profile</a
+        >
+        <a
+          href="/dashboard"
+          class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800"
+          >Dashboard</a
+        >
+        <a
+          href="/settings"
+          class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800"
+          >Settings</a
+        >
+        <a
+          href="/logout"
+          class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800 text-red-500 font-semibold"
+          >Logout</a
+        >
+      </div>
+
+      <!-- Stats Section -->
+      <div class="px-4 py-3">
+        <h2 class="text-sm font-semibold mb-2">Stats Overview</h2>
+        <svg viewBox="0 0 32 32" class="w-24 h-24 mx-auto mb-3">
+          <circle r="16" cx="16" cy="16" fill="#ccc" />
+          <circle
+            r="16"
+            cx="16"
+            cy="16"
+            fill="transparent"
+            stroke="#22d3ee"
+            stroke-width="32"
+            stroke-dasharray="20 80"
+            transform="rotate(-90) translate(-32)"
+          />
+          <circle
+            r="16"
+            cx="16"
+            cy="16"
+            fill="transparent"
+            stroke="#3b82f6"
+            stroke-width="32"
+            stroke-dasharray="30 70"
+            transform="rotate(-90) translate(-32)"
+          />
+          <circle
+            r="16"
+            cx="16"
+            cy="16"
+            fill="transparent"
+            stroke="#f43f5e"
+            stroke-width="32"
+            stroke-dasharray="50 50"
+            transform="rotate(-90) translate(-32)"
+          />
+        </svg>
+        <ul class="text-xs space-y-1">
+          <li>
+            <span
+              class="inline-block w-3 h-3 bg-cyan-400 mr-2 rounded-full"
+            ></span
+            >Pending: 10%
+          </li>
+          <li>
+            <span
+              class="inline-block w-3 h-3 bg-blue-500 mr-2 rounded-full"
+            ></span
+            >Authenticated: 30%
+          </li>
+          <li>
+            <span
+              class="inline-block w-3 h-3 bg-rose-500 mr-2 rounded-full"
+            ></span
+            >Rejected: 60%
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="flex pt-20 h-[calc(100vh-5rem)]">
+      <!-- Left Sidebar -->
+      <aside
+        class="w-64 bg-cyan-500 text-white flex flex-col p-4 rounded-tr-3xl rounded-br-3xl shadow-lg"
+      >
+        <!-- Title -->
+        <h2 class="text-xl font-bold mb-4">My Courses</h2>
+
+        <!-- Scrollable Course List -->
+        <div class="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
+          <!-- Course Item -->
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">Intro to AI</p>
+            <p class="text-sm text-white/80">by John Doe</p>
+          </div>
+
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">React for Beginners</p>
+            <p class="text-sm text-white/80">by Jane Smith</p>
+          </div>
+
+          <div
+            class="bg-cyan-600 rounded-lg p-3 shadow hover:bg-cyan-700 transition"
+          >
+            <p class="font-semibold truncate">ML Project Evaluator</p>
+            <p class="text-sm text-white/80">by Ankit Patel</p>
+          </div>
+
+          <!-- Duplicate and add more as needed -->
+        </div>
+
+        <!-- Bottom Fixed Buttons -->
+        <div class="pt-4 mt-4 border-t border-white/30 space-y-2">
+          <button
+            class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
+          >
+            Add Course
+          </button>
+          <!-- <button
+            class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
+          >
+            Manage Access
+          </button> -->
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 bg-black overflow-y-auto p-6">
+        <!-- Filter Bar -->
+        <div class="flex justify-center mb-6">
+          <div
+            class="bg-gray-800 px-6 py-2 rounded-full text-sm font-semibold text-white"
+          >
+            Filter : <span class="text-blue-400">Recent</span> |
+            <span class="text-blue-400">Authenticated</span> |
+            <span class="text-blue-400">Rejected</span> |
+            <span class="text-blue-400">Pending</span>
+          </div>
+        </div>
+
+        <!-- Course Grid -->
+        <div class="grid grid-cols-4 gap-6">
+          <!-- Card Template -->
+          <template id="card-template">
+            <div class="bg-gray-900 p-3 rounded-2xl shadow-md">
+              <img
+                src="assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
+                alt="Course"
+                class="w-full h-32 object-cover rounded-md mb-3"
+              />
+              <div class="text-sm leading-snug">
+                <p>Abandoned places finder</p>
+                <p>Course ID: 128904</p>
+                <p>
+                  <span class="font-semibold">Status:</span>
+                  <span class="text-red-500" >Rejected</span> 
+                </p>
+                <p>Date: 23/03/24</p>
+              </div>
+            </div>
+          </template>
+          
+          <template id="card-template2">
+            <div class="bg-gray-900 p-3 rounded-2xl shadow-md">
+              <img
+                src="assets/images/riccardo-trimeloni-lc5iIZ7UO1w-unsplash.jpg"
+                alt="Course"
+                class="w-full h-32 object-cover rounded-md mb-3"
+              />
+              <div class="text-sm leading-snug">
+                <p>Abandoned places finder</p>
+                <p>Course ID: 128904</p>
+                <p>
+                  <span class="font-semibold">Status:</span>
+                  <span class="text-green-500" >Approved</span> 
+                </p>
+                <p>Date: 23/03/24</p>
+              </div>
+            </div>
+          </template>
+        </div>
+      </main>
+    </div>
+
+    <!-- Script -->
+    <script>
+      // Injecting Course Cards
+      const grid = document.querySelector(".grid");
+      const template = document.getElementById("card-template").content;
+      const template2 = document.getElementById("card-template2").content;
+      for (let i = 0; i < 4; i++) {
+        grid.appendChild(template.cloneNode(true));
+        grid.appendChild(template2.cloneNode(true));
+      }
+
+      // Sidebar toggle logic
+      const profileBtn = document.getElementById("profileBtn");
+      const profileMenu = document.getElementById("profileMenu");
+
+      profileBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent click propagation
+        profileMenu.classList.toggle("hidden");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!profileMenu.contains(e.target) && !profileBtn.contains(e.target)) {
+          profileMenu.classList.add("hidden");
+        }
+      });
+    </script>
+  </body>
+</html>
