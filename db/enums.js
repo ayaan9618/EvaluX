@@ -8,4 +8,9 @@ const STATUS = Object.freeze({
     VERIFIED: "VERIFIED",
 });
 
-module.exports = { USERTYPE, STATUS };
+const TESTED_STATUS = Object.freeze({
+    NULL: "NULL",
+    TESTED: "TESTED",
+});
+
+module.exports = { USERTYPE, STATUS, TESTED_STATUS };
