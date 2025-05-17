@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { USERTYPE, STATUS } = require("../db/enums");
+const { USERTYPE, STATUS, TESTED_STATUS } = require("../db/enums");
 
 const courseSchema = mongoose.Schema({
     author: {
@@ -41,12 +41,24 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: [true, "Please provide "]
     },
+    technologies: {
+        type: [String],
+        required: [true, "technologies are required"],
+    },
     status: {
         type: String,
         default: STATUS.UNVERIFIED,
         enum: {
             values: Object.values(STATUS),
             message: "{VALUE} is not a valid status"
+        }
+    },
+    tested: {
+        type: String,
+        default: TESTED_STATUS.NULL,
+        enum: {
+            values: Object.values(TESTED_STATUS),
+            message: "{VALUE} is not a valid tested status"
         }
     }
 },

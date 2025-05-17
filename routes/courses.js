@@ -12,7 +12,7 @@ const router = express.Router();
 router.route("/")
     .post(auth, verifyUserType(USERTYPE.ORG), addCourse)
     .get(auth, verifyUserType(USERTYPE.ORG), getAllCourses);
-router.route("/:id")
+router.route("/:course_id")
     .get(auth, verifyUserType(USERTYPE.ORG), verifyCourse, getCourseById)
     .delete(auth, verifyUserType(USERTYPE.ORG), verifyCourse, deleteCourse);
 
