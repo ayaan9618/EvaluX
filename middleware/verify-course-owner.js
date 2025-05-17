@@ -6,7 +6,7 @@ const { Course } = require("../models/Project");
 const verifyCourse = async (req, res, next) => {
 
     const { userId } = req.user;
-    const courseId = req.params.id;
+    const courseId = req.params.course_id;
 
     req.course = await Course.findOne({ _id: courseId, author: userId });
 
