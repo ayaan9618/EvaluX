@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Evaluation | EvaluX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --bg-dark: #020617;
+            --bg-darker: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.5);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --border-radius: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-top: 5rem;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Profile Dropdown */
+        .profile {
+            position: relative;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 9999px;
+            background: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .profile-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-img {
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            width: 12rem;
+            background: var(--bg-darker);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-0.5rem);
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .profile:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .dropdown a:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown a i {
+            width: 1.25rem;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 0.25rem 0;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        @media (max-width: 1024px) {
+            .grid-cols-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Flex Utilities */
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        /* Spacing */
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="#" class="logo">EvaluX</a>
+        <div class="profile">
+            <button class="profile-btn">
+                <img src="https://www.svgrepo.com/show/452030/avatar-default.svg" alt="Profile" class="profile-img">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 2rem 0;">
+        <!-- Project Header -->
+        <div class="card mb-6">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h1>Certificate Verification System</h1>
+                    <p style="margin: 0.5rem 0 1rem; color: var(--text-muted);">
+                        A blockchain-based solution for issuing and verifying digital certificates with immutability and transparency.
+                    </p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1.5rem;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Course</div>
+                            <div style="font-weight: 500;">Advanced Web Development with Blockchain</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Date Validated</div>
+                            <div style="font-weight: 500;">May 17, 2023</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">Status</div>
+                            <span class="badge badge-approved" style="margin-top: 0.25rem; display: inline-block;">
+                                <i class="fas fa-check-circle"></i> Approved
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.75rem; flex-shrink: 0;">
+                    <a href="https://github.com/example/certificate-verification" target="_blank" class="btn btn-outline">
+                        <i class="fab fa-github"></i>
+                        GitHub Repo
+                    </a>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results & Feedback -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Test Results -->
+            <div class="card" style="grid-column: span 2;">
+                <h2 style="margin-bottom: 1.5rem;">Test Results</h2>
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Code Quality</span>
+                        <span style="font-weight: 500; color: #10b981;">Passed <i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 92%; height: 100%; background: #10b981; border-radius: 4px;"></div>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">92% test coverage</div>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Functionality</span>
+                        <span style="font-weight: 500; color: #10b981;">Passed <i class="fas fa-check-circle"></i></span>
+                    </div>
+                    <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 88%; height: 100%; background: #10b981; border-radius: 4px;"></div>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">All core features implemented</div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Documentation</span>
+                        <span style="font-weight: 500; color: #f59e0b;">Needs Improvement <i class="fas fa-exclamation-circle"></i></span>
+                    </div>
+                    <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 65%; height: 100%; background: #f59e0b; border-radius: 4px;"></div>
+                    </div>
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Documentation is incomplete</div>
+                </div>
+            </div>
+
+            <!-- Reviewer Details -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">Reviewer Details</h2>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #3b82f6; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 600;">AJ</div>
+                    <div>
+                        <div style="font-size: 1.25rem; font-weight: 600;">Dr. Alex Johnson</div>
+                        <div style="color: var(--text-muted);">Senior Blockchain Developer</div>
+                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem;">
+                            <a href="mailto:alex.johnson@example.com" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                                <i class="fas fa-envelope"></i> Email
+                            </a>
+                            <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                                <i class="fas fa-phone"></i> Call
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; padding: 1rem; border-radius: 0 4px 4px 0; margin-top: 1rem;">
+                    <div style="font-weight: 500; margin-bottom: 0.5rem; color: #10b981;">
+                        <i class="fas fa-check-circle"></i> Final Verdict: Approved
+                    </div>
+                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">
+                        Project meets all requirements and demonstrates excellent implementation of blockchain concepts.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Feedback -->
+        <div class="card mb-6">
+            <h2 style="margin-bottom: 1.5rem;">Detailed Feedback</h2>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary);">
+                    <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                    Strengths
+                </h3>
+                <ul style="padding-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Excellent implementation of smart contracts for certificate issuance</li>
+                    <li style="margin-bottom: 0.5rem;">Clean and intuitive user interface</li>
+                    <li>Good test coverage for critical components</li>
+                </ul>
+
+                <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem; color: #f59e0b;">
+                    <i class="fas fa-exclamation-circle" style="margin-right: 0.5rem;"></i>
+                    Areas for Improvement
+                </h3>
+                <ul style="padding-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li style="margin-bottom: 0.5rem;">Documentation needs more detailed API references</li>
+                    <li>Consider adding more edge case tests</li>
+                </ul>
+
+                <h3 style="font-size: 1.1rem; margin: 1.5rem 0 1rem; color: var(--text-light);">
+                    <i class="fas fa-comment" style="margin-right: 0.5rem;"></i>
+                    Additional Comments
+                </h3>
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; border-left: 3px solid var(--primary);">
+                    <p style="margin-bottom: 0.5rem;">The project demonstrates a strong understanding of blockchain principles. The implementation is solid, but would benefit from more comprehensive documentation to assist future maintainers.</p>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0;">
+                        - Dr. Alex Johnson, May 17, 2023
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <button class="btn btn-outline">
+                    <i class="fas fa-download"></i> Download Full Report
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-print"></i> Print Evaluation
+                </button>
+            </div>
+        </div>
+
+        <!-- Project Artifacts -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Project Artifacts</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+                <a href="#" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; text-decoration: none; color: var(--text-light); transition: background 0.2s;">
+                    <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #6366f1; font-size: 1.25rem;">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;">Source Code</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">GitHub Repository</div>
+                    </div>
+                </a>
+
+                <a href="#" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem; text-decoration: none; color: var(--text-light); transition: background 0.2s;">
+                    <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #ef4444; font-size: 1.25rem;">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;">Project Report</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">certificate_verification.pdf</div>
+                    </div>
+                </a>
+
+                <a href="#" style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem; text-decoration: none; color: var(--text-light); transition: background 0.2s;">
+                    <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.25rem;">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 500; margin-bottom: 0.25rem;">Live Demo</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">demo.certverify.app</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple dropdown toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileBtn = document.querySelector('.profile-btn');
+            const dropdown = document.querySelector('.dropdown');
+            
+            profileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = dropdown.style.opacity === '1';
+                
+                if (isOpen) {
+                    dropdown.style.opacity = '0';
+                    dropdown.style.visibility = 'hidden';
+                    dropdown.style.transform = 'translateY(-0.5rem)';
+                } else {
+                    dropdown.style.opacity = '1';
+                    dropdown.style.visibility = 'visible';
+                    dropdown.style.transform = 'translateY(0)';
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdown.style.opacity = '0';
+                dropdown.style.visibility = 'hidden';
+                dropdown.style.transform = 'translateY(-0.5rem)';
+            });
+
+            // Prevent dropdown from closing when clicking inside it
+            dropdown.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>
