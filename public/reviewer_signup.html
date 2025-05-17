@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reviewer Profile | EvaluX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/tailwind.css" />
+  <style>
+    button:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center relative p-4">
+  <!-- Glowing Circles -->
+  <div
+    class="absolute top-0 left-0 w-80 h-80 bg-cyan-500 rounded-full mix-blend-screen blur-3xl opacity-30 animate-pulse"
+  ></div>
+  <div
+    class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen blur-2xl opacity-30 animate-pulse"
+  ></div>
+
+  <div class="relative z-10 w-full max-w-2xl">
+    <h2 class="text-3xl font-semibold mb-8 text-cyan-400 text-center">Complete Your Profile</h2>
+
+    <form class="bg-gray-900 p-8 rounded-lg shadow-lg space-y-6" novalidate>
+      <!-- Name -->
+      <div>
+        <label for="full-name" class="block mb-2 font-semibold text-gray-300">
+          Full Name <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="full-name"
+          name="full-name"
+          required
+          class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+        />
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block mb-2 font-semibold text-gray-300">
+          Contact Email <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"          placeholder="you@example.com"
+        />
+      </div>
+
+      <!-- Skills -->
+      <div>
+        <label for="skill-input" class="block mb-2 font-semibold text-gray-300">
+          Skills / Expertise <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="skill-input"
+          class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+          autocomplete="off"
+          required
+        />
+        <div id="tags-container" class="mt-3 flex flex-wrap gap-2"></div>
+      </div>
+
+      <!-- LinkedIn URL -->
+      <div>
+        <label for="linkedin" class="block mb-2 font-semibold text-gray-400 italic">
+          LinkedIn Profile URL <span class="text-gray-400">(Optional)</span>
+        </label>
+        <input
+          type="url"
+          id="linkedin"
+          name="linkedin"
+          class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+        />
+      </div>
+
+      <!-- Professional Experience -->
+      <div>
+        <label for="experience" class="block mb-2 font-semibold text-gray-400 italic">
+          Professional Experience <span class="text-gray-400">(Optional)</span>
+        </label>
+        <textarea
+          id="experience"
+          name="experience"
+          rows="4"
+          class="w-full rounded-lg bg-[#475569] text-gray-200 px-4 py-3 resize-y focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:bg-[#334155]"
+        ></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="w-full py-3 rounded-full bg-cyan-400 text-black font-semibold hover:bg-cyan-500 transition-shadow shadow-md shadow-cyan-400 hover:shadow-lg"
+      >
+        Save Profile
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const skillInput = document.getElementById('skill-input');
+    const tagsContainer = document.getElementById('tags-container');
+    let tags = [];
+
+    function renderTags() {
+      tagsContainer.innerHTML = '';
+      tags.forEach((tag, index) => {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'flex items-center bg-cyan-500 text-black rounded-full px-3 py-1 text-sm font-semibold select-none';
+
+        const text = document.createElement('span');
+        text.textContent = tag;
+        tagEl.appendChild(text);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'ml-2 text-black hover:text-red-700 font-bold';
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+          tags.splice(index, 1);
+          renderTags();
+        });
+
+        tagEl.appendChild(closeBtn);
+        tagsContainer.appendChild(tagEl);
+      });
+    }
+
+    skillInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const value = skillInput.value.trim();
+        if (value && !tags.includes(value)) {
+          tags.push(value);
+          renderTags();
+          skillInput.value = '';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

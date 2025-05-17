@@ -17,7 +17,9 @@
   "scripts": {
     "start": "node server.js",
     "test": "nodemon",
-    "tailwindcss": "npx @tailwindcss/cli -i ./public/styles/input.css -o ./public/styles/tailwind.css --watch"
+    "tailwindcss": "npx @tailwindcss/cli -i ./public/styles/input.css -o ./public/styles/tailwind.css --watch",
+    "forward": "ngrok http --url=talented-albacore-utterly.ngrok-free.app 3000",
+    "forward2": "ngrok http --url=well-natural-satyr.ngrok-free.app 3000"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
@@ -25,12 +27,15 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.1.7",
     "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
     "express-xss-sanitizer": "^2.0.0",
     "http-status-codes": "^2.3.0",
-    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.0",
     "tailwindcss": "^4.1.7"
   }
 }
