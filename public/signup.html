@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign up for EvaluX and empower your platform with AI-driven skills validation." />
+  <meta name="keywords" content="EvaluX, sign-up, authentication, ed-tech" />
+  <title>Sign Up | EvaluX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./styles/tailwind.css" />
+  <style>
+    body {
+      font-family: "IBM Plex Mono", sans-serif;
+      /* font-family: "Space Grotesk", sans-serif; */
+    }
+
+    .dark-mode {
+      background-color: #1a202c;
+      color: white;
+    }
+
+    .form-container {
+      background-color: #2d3748;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-field {
+      background-color: #4a5568;
+      color: white;
+      border: 1px solid #2d3748;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      width: 100%;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #63b3ed;
+    }
+
+    /* Role buttons styling */
+    .role-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-button {
+      width: 10rem;
+      height: 3rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      background-color: #0bc5ea;
+      /* cyan-400 */
+      color: black;
+      user-select: none;
+    }
+
+    .role-button.inactive {
+      background-color: #4a5568;
+      /* gray-600 */
+      color: #cbd5e0;
+      /* gray-300 */
+    }
+
+    .role-button:hover {
+      transform: scale(1.05);
+    }
+
+    .role-button.active {
+      background-color: #00b5d8;
+      /* cyan-500 */
+      color: black;
+      border-color: #00b5d8;
+      box-shadow: 0 0 8px #00b5d8;
+    }
+  </style>
+</head>
+
+<body class="bg-black text-white min-h-screen flex items-center justify-center relative">
+  <!-- Glowing Circles -->
+  <div
+    class="absolute top-0 left-0 w-80 h-80 bg-cyan-500 rounded-full mix-blend-screen blur-3xl opacity-30 animate-pulse">
+  </div>
+  <div
+    class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-screen blur-2xl opacity-30 animate-pulse">
+  </div>
+  <div class="w-full max-w-md mx-auto">
+    <div class="text-center mb-10 cursor-pointer">
+        <a href="./index.html">
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-cyan-400 drop-shadow-md">
+                EvaluX
+            </h1>
+            <p class="text-gray-400 mt-2 text-sm sm:text-base">AI-Powered Certificate Validation</p>
+        </a>
+    </div>
+    <!-- Sign-Up Form -->
+    <div class="form-container w-full max-w-md">
+      <h2 class="text-3xl font-bold text-center text-cyan-500 mb-6">
+        Create an Account
+      </h2>
+
+      <!-- Role Selection Buttons -->
+      <div class="role-buttons" role="group" aria-label="Select your role">
+        <button type="button" class="role-button active" id="role-course-seller" aria-pressed="true">
+          Course Seller
+        </button>
+        <button type="button" class="role-button inactive" id="role-reviewer" aria-pressed="false">
+          Reviewer
+        </button>
+      </div>
+
+      <form action="#" method="POST" class="space-y-6">
+        <input type="hidden" name="role" id="selected-role" value="course-seller" />
+        <div>
+          <label for="email" class="block text-sm font-semibold text-gray-300">Email Address</label>
+          <input type="email" id="email" name="email" required class="input-field" />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-semibold text-gray-300">Password</label>
+          <input type="password" id="password" name="password" required class="input-field" />
+        </div>
+        <div>
+          <label for="confirm-password" class="block text-sm font-semibold text-gray-300">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm-password" required class="input-field" />
+        </div>
+        <div class="flex justify-center">
+          <button type="submit"
+            class="w-[100%] px-8 py-3 text-lg font-semibold bg-cyan-500 text-black rounded-full shadow-md hover:bg-cyan-600 transition-all cursor-pointer">
+            Sign Up
+          </button>
+        </div>
+      </form>
+      <p class="mt-6 text-center text-gray-400">
+        Already have an account?
+        <a href="./login.html" class="link text-cyan-500 hover:text-cyan-600">Log In</a>
+      </p>
+    </div>
+  </div>
+  <!-- Logo -->
+
+  <script>
+    // JavaScript to handle role button toggle and set hidden input value
+    const courseSellerBtn = document.getElementById("role-course-seller");
+    const reviewerBtn = document.getElementById("role-reviewer");
+    const roleInput = document.getElementById("selected-role");
+
+    courseSellerBtn.addEventListener("click", () => {
+      courseSellerBtn.classList.add("active");
+      courseSellerBtn.classList.remove("inactive");
+      courseSellerBtn.setAttribute("aria-pressed", "true");
+
+      reviewerBtn.classList.remove("active");
+      reviewerBtn.classList.add("inactive");
+      reviewerBtn.setAttribute("aria-pressed", "false");
+
+      roleInput.value = "course-seller";
+    });
+
+    reviewerBtn.addEventListener("click", () => {
+      reviewerBtn.classList.add("active");
+      reviewerBtn.classList.remove("inactive");
+      reviewerBtn.setAttribute("aria-pressed", "true");
+
+      courseSellerBtn.classList.remove("active");
+      courseSellerBtn.classList.add("inactive");
+      courseSellerBtn.setAttribute("aria-pressed", "false");
+
+      roleInput.value = "reviewer";
+    });
+  </script>
+</body>
+
+</html>
