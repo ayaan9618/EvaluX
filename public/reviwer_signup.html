@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reviewer Panel | EvaluX</title>
+    <link rel="stylesheet" href="src/tailwind.css" />
+  </head>
+  <body class="bg-gray-950 text-white font-sans overflow-hidden h-screen">
+    <div class="grid grid-rows-[auto_1fr] h-full">
+
+      <header
+  class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/5 border-b border-white/10 shadow-md"
+>
+  <h1 class="text-2xl font-bold text-cyan-400">EvaluX</h1> 
+
+ <!-- Profile Dropdown Container -->
+<div class="relative" id="profileDropdownWrapper">
+  <!-- Button with Avatar and Dropdown Icon -->
+  <button
+    id="profileBtn"
+    class="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-white/10 focus:outline-none focus:ring-1 focus:ring-cyan-400 transition"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <img
+      src="https://www.svgrepo.com/show/452030/avatar-default.svg"
+      alt="Profile"
+      class="w-9 h-9 rounded-full border border-cyan-400"
+    />
+    <!-- Chevron Icon -->
+    <svg
+      class="w-4 h-4 text-cyan-400 transition-transform duration-200"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <!-- Dropdown Menu -->
+<div
+  id="profileMenu"
+  class="hidden absolute right-0 mt-3 w-48 bg-white text-black dark:bg-zinc-900 dark:text-white rounded-xl shadow-lg ring-1 ring-black/5 z-50"
+  role="menu"
+  aria-label="User Menu"
+>
+  <a href="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-t-xl">
+    👤 Profile
+  </a>
+  <a href="/dashboard" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">
+    🧭 Dashboard
+  </a>
+  <a href="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">
+    ⚙️ Settings
+  </a>
+  <a href="/logout" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-b-xl">
+    🚪 Logout
+  </a>
+</div>
+
+</div>
+
+
+</header>
+<!-- Project Info Header (below nav) -->
+<header class="mt-[100px] flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md">
+  <div>
+    <h1 class="text-2xl font-bold text-cyan-400">Project: EvaluX Submission</h1>
+    <p class="text-sm text-gray-400">AI-Based Certificate Verification System</p>
+  </div>
+  <a
+    href="#"
+    class="bg-green-500 text-black font-semibold px-4 py-2 rounded-full hover:bg-green-600 transition"
+  >
+    🔗 Open in GitHub Codespaces
+  </a>
+</header>
+
+      <!-- Main Content -->
+      <main class="grid grid-cols-5 gap-4 px-6 py-4 pt-4 bg-gray-950 overflow-hidden">
+        
+        <!-- File Structure -->
+        <section class="bg-gray-900 rounded-xl p-4 col-span-1 flex flex-col">
+          <h2 class="text-lg font-semibold mb-3 text-cyan-400">📁 File Structure</h2>
+          <ul class="text-sm text-gray-300 space-y-1">
+            <li>├── index.html</li>
+            <li>├── style.css</li>
+            <li>├── app.js</li>
+            <li>└── components/</li>
+            <li class="pl-4">├── Header.js</li>
+            <li class="pl-4">└── Footer.js</li>
+          </ul>
+        </section>
+
+        <!-- Code Preview -->
+        <section class="bg-gray-900 rounded-xl p-4 col-span-3 flex flex-col">
+          <h2 class="text-lg font-semibold mb-3 text-cyan-400">👨‍💻 Code Preview</h2>
+          <pre class="bg-gray-800 text-green-400 text-sm rounded-lg p-4 overflow-auto flex-1">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;&lt;title&gt;EvaluX&lt;/title&gt;&lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Welcome to EvaluX!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+          </pre>
+        </section>
+
+        <!-- Checklist & Feedback -->
+        <section class="bg-gray-900 rounded-xl p-4 col-span-1 flex flex-col justify-between">
+          <div>
+            <!-- <h2 class="text-lg font-semibold text-cyan-400 mb-3">🧾 Checklist</h2> -->
+            <!-- <form class="text-sm text-gray-300 space-y-2">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" class="form-checkbox text-cyan-500" />
+                    Code is clean and commented
+                </label>
+                <label class="flex items-center gap-2">
+                <input type="checkbox" class="form-checkbox text-cyan-500" />
+                Folder structure is organized
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="form-checkbox text-cyan-500" />
+                Meets project requirements
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="form-checkbox text-cyan-500" />
+                No plagiarism detected
+              </label>
+            </form> -->
+            <h2 class="text-lg font-semibold text-cyan-400 mb-3">🧾 Test Results</h2>
+            <div class="w-full h-52 p-3 rounded-lg bg-gray-800 text-gray-400 text-sm ">
+                Waiting for test results...
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-semibold text-cyan-400 mb-2 mt-4">📝 Feedback</h2>
+            <textarea
+              rows="4"
+              class="w-full p-2 rounded-lg bg-gray-800 text-white text-sm border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+              placeholder="Enter your comments here..."
+            ></textarea>
+
+            <div class="mt-4 flex gap-2">
+              <button class="w-1/2 bg-green-500 hover:bg-green-600 text-black font-bold py-2 rounded-lg">
+                ✅ Approve
+              </button>
+              <button class="w-1/2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 rounded-lg">
+                ❌ Reject
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+    <script>
+  const btn = document.getElementById('profileBtn');
+  const menu = document.getElementById('profileMenu');
+  const wrapper = document.getElementById('profileDropdownWrapper');
+
+  btn.addEventListener('click', () => {
+    const isOpen = menu.classList.contains('block');
+    menu.classList.toggle('hidden', isOpen);
+    menu.classList.toggle('block', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // Close when clicking outside
+  window.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      menu.classList.add('hidden');
+      menu.classList.remove('block');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close on ESC key
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      menu.classList.add('hidden');
+      menu.classList.remove('block');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>
+  </body>
+  
+</html>
