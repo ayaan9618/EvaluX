@@ -427,9 +427,6 @@
   .h-full {
     height: 100%;
   }
-  .h-screen {
-    height: 100vh;
-  }
   .min-h-full {
     min-height: 100%;
   }
@@ -649,6 +646,9 @@
   }
   .overflow-hidden {
     overflow: hidden;
+  }
+  .overflow-x-scroll {
+    overflow-x: scroll;
   }
   .overflow-y-auto {
     overflow-y: auto;
