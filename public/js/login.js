@@ -19,14 +19,18 @@ form.addEventListener("submit", async (e) => {
 
         localStorage.setItem("token", data.token);
         showMsg(data.msg, SUCCESS);
-
-        // Redirect to the appropriate dashboard based on user type
+        
         if (userType === "org") {
+            if (data.user.status === "UNVERIFIED")
+                window.location.href = "./org_signup.html";
+            else
             window.location.href = "./org_dashboard.html";
         } else if (userType === "reviewer") {
-            window.location.href = "./reviewer_dashboard.html";
+            if (data.user.status === "UNVERIFIED")
+                window.location.href = "./reviewer_signup.html";
+            else
+                window.location.href = "./reviewer_dashboard.html";
         }
-        // window.location.href = "./otp.html";
 
     } catch (error) {
         if (error.response?.data?.msg)

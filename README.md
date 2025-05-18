@@ -62,25 +62,6 @@ EvaluX is a **B2B middleware service** that helps ed-tech platforms, institution
 
 ---
 
-## 📦 Folder Structure
-
-
-
-```
-EvaluX/
-├── public/               # Frontend files (HTML, CSS, JS)
-├── server/               # Backend logic (controllers, routes)
-├── config/               # Environment configs
-├── styles/               # Tailwind & custom animations
-├── server.js             # Node.js server entry point
-└── README.md
-```
-
-
-
-
----
-
 ## 📈 Business Vision
 
 - Reach **500+ institutions** and **1M+ students** in 3 years
