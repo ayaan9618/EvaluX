@@ -62,14 +62,17 @@ const addProject = async (req, res) => {
 
     // const { userId } = req.user;
     const { _id: courseId } = req.course;
-    const { title, gitHubRepoURL, technologies } = req.body;
+    const { title, gitHubRepoURL, technologies, description } = req.body;
     
     const isValidGitHubUrl = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/.test(gitHubRepoURL);
     if (!isValidGitHubUrl) {
         throw new APIError(StatusCodes.BAD_REQUEST, "Invalid GitHub repository URL.");
     }
 
-    const project = await Project.create({ course: courseId, title, gitHubRepoURL, technologies });
+    const project = await Project.create({
+        course: courseId, title, gitHubRepoURL,
+        technologies, description
+    });
 
     runProjectAnalyzer(gitHubRepoURL, project._id);
 
