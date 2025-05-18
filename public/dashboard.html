@@ -640,15 +640,6 @@
               </button>
               
               <button 
-                onclick="filterProjects('recent')" 
-                class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
-                data-status="recent"
-              >
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                Recent
-              </button>
-              
-              <button 
                 onclick="filterProjects('authenticated')" 
                 class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
                 data-status="authenticated"
@@ -673,24 +664,6 @@
               >
                 <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
                 Pending
-              </button>
-              
-              <button 
-                onclick="filterProjects('due')" 
-                class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
-                data-status="due"
-              >
-                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                Due Soon
-              </button>
-              
-              <button 
-                onclick="filterProjects('review')" 
-                class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
-                data-status="review"
-              >
-                <span class="w-2 h-2 rounded-full bg-pink-500"></span>
-                In Review
               </button>
             </div>
           </div>
@@ -741,7 +714,7 @@
             />
           </div>
           <div>
-            <label for="courseAuthor" class="block text-sm font-medium text-gray-300 mb-1">Instructor (Optional)</label>
+            <label for="courseAuthor" class="block text-sm font-medium text-gray-300 mb-1">Instructor </label>
             <input
               type="text"
               id="courseAuthor"
@@ -830,7 +803,7 @@
             </div>
             
             <div class="md:col-span-2">
-              <label for="projectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link (Optional)</label>
+              <label for="projectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link </label>
               <input 
                 type="url" 
                 id="projectGithub" 
@@ -930,18 +903,6 @@
               
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label for="editProjectId" class="block text-sm font-medium text-gray-300 mb-1">Project ID</label>
-                  <input 
-                    type="text" 
-                    id="editProjectId" 
-                    name="editProjectId" 
-                    required
-                    class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                    placeholder="e.g., PRJ-006"
-                  >
-                </div>
-                
-                <div>
                   <label for="editProjectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link</label>
                   <input 
                     type="url" 
@@ -962,21 +923,7 @@
                 </div>
               </div>
               
-              <div>
-                <label for="editProjectStatus" class="block text-sm font-medium text-gray-300 mb-1">Status</label>
-                <select 
-                  id="editProjectStatus" 
-                  name="editProjectStatus" 
-                  required
-                  class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                >
-                  <option value="pending" class="text-yellow-500">Pending</option>
-                  <option value="authenticated" class="text-green-500">Authenticated</option>
-                  <option value="registered" class="text-purple-500">Registered</option>
-                  <option value="due" class="text-orange-500">Due</option>
-                  <option value="review" class="text-pink-500">Review</option>
-                </select>
-              </div>
+
               
               <div>
                 <label for="editProjectDate" class="block text-sm font-medium text-gray-300 mb-1">Date</label>
@@ -1014,11 +961,13 @@
           function populateEditForm(project) {
             if (!project) return;
             
-            document.getElementById('editProjectId').value = project.id || '';
+            // Store the project ID in a data attribute on the form
+            const form = document.getElementById('editProjectForm');
+            form.dataset.projectId = project.id;
+            
             document.getElementById('editProjectTitle').value = project.title || '';
             document.getElementById('editProjectDescription').value = project.description || '';
             document.getElementById('editProjectCourse').value = project.courseId || '';
-            document.getElementById('editProjectStatus').value = project.status || 'not-started';
             
             // Format date for date input (YYYY-MM-DD)
             const date = project.date ? new Date(project.date) : new Date();
@@ -1173,6 +1122,64 @@
                 closeEditProjectModal();
               }
             };
+            
+            // Function to save projects to localStorage
+            function saveProjects() {
+              localStorage.setItem('projects', JSON.stringify(projects));
+            }
+
+            // Edit project form submission
+            const editProjectForm = document.getElementById('editProjectForm');
+            if (editProjectForm) {
+              editProjectForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const projectId = this.dataset.projectId;
+                if (!projectId) {
+                  console.error('Error: Project ID is missing from form data');
+                  alert('Error: Unable to update project. Please try again.');
+                  return;
+                }
+                
+                const projectData = {
+                  id: projectId,
+                  title: this.querySelector('#editProjectTitle').value,
+                  description: this.querySelector('#editProjectDescription').value,
+                  courseId: this.querySelector('#editProjectCourse').value,
+                  // Keep the existing status or default to 'pending'
+                  status: projects.find(p => p.id === projectId)?.status || 'pending',
+                  date: this.querySelector('#editProjectDate').value || new Date().toISOString().split('T')[0],
+                  githubLink: this.querySelector('#editProjectGithub').value,
+                  tags: this.querySelector('#editProjectTags').value 
+                    ? this.querySelector('#editProjectTags').value.split(',').map(tag => tag.trim())
+                    : []
+                };
+                
+                console.log('Updating project with data:', projectData);
+                
+                // Find the project index
+                const projectIndex = projects.findIndex(p => p.id === projectId);
+                
+                if (projectIndex !== -1) {
+                  // Update the project
+                  projects[projectIndex] = { ...projects[projectIndex], ...projectData };
+                  
+                  // Save to localStorage
+                  saveProjects();
+                  
+                  // Re-render projects
+                  renderProjects();
+                  
+                  // Close modal
+                  closeEditProjectModal();
+                  
+                  alert('Project updated successfully!');
+                } else {
+                  console.error('Project not found with ID:', projectId);
+                  alert('Project not found. Please try again.');
+                }
+              });
+            }
             
             // Set default date for project due date
             const projectDueDate = document.getElementById('projectDueDate');
