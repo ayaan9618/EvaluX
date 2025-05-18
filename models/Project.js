@@ -60,6 +60,9 @@ const projectSchema = mongoose.Schema({
             values: Object.values(TESTED_STATUS),
             message: "{VALUE} is not a valid tested status"
         }
+    },
+    feedback: {
+        type: String
     }
 },
 {

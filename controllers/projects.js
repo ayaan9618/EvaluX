@@ -3,7 +3,7 @@ const APIError = require("../errors/api-error");
 const { StatusCodes } = require("http-status-codes");
 const { Course, Project, SemgrepResult } = require("../models/Project");
 const User = require("../models/User");
-const { USERTYPE, STATUS, TESTED_STATUS } = require("../db/enums");
+const { USERTYPE, STATUS, TESTED_STATUS, PROJECT_STATUS } = require("../db/enums");
 const runProjectAnalyzer = require("../assesser");
 
 const getProjectInCourse = async (req, res) => {
@@ -108,6 +108,9 @@ const assessProject = async (req, res) => {
     const projectId = req.params.id;
 
     const project = await Project.findById(projectId);
+    if (!project) {
+        throw new APIError(StatusCodes.NOT_FOUND, `Project with id: ${projectId} not found`);
+    }
     if (project.tested !== TESTED_STATUS.NULL) {
         throw new APIError(StatusCodes.FORBIDDEN, "Project already assessed");
     }
@@ -118,7 +121,27 @@ const assessProject = async (req, res) => {
 
 }
 
+const reviewProject = async (req, res) => {
+
+    const projectId = req.params.id;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+        throw new APIError(StatusCodes.NOT_FOUND, `Project with id: ${projectId} not found`);
+    }
+    if (project.status !== PROJECT_STATUS.PENDING) {
+        throw new APIError(StatusCodes.FORBIDDEN, "Project already reviewed");
+    }
+
+    const { status, feedback } = req.body;
+
+    await Project.findByIdAndUpdate(projectId, 
+        { status: status, feedback: feedback },
+        { runValidators: true }
+    )
+}
+
 module.exports = {
     getProjectInCourse, addProject, getProjectById, deleteProject, getAllProjects,
-    assessProject
+    assessProject, reviewProject
 };
