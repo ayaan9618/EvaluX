@@ -72,7 +72,7 @@ const registerComplete = async (req, res) => {
 
 const login = async (req, res) => {
 
-    const { email, password } = req.body;
+    const { userType, email, password } = req.body;
     if (!email || !password) {
         throw new APIError(StatusCodes.BAD_REQUEST, "Please prove email and password");
     }
@@ -81,6 +81,10 @@ const login = async (req, res) => {
 
     if (!user) {
         throw new APIError(StatusCodes.UNAUTHORIZED, "Invalid Credentials");
+    }
+    
+    if (userType !== user.userType) {
+        throw new APIError(StatusCodes.UNAUTHORIZED, "Invalid Credentials.");
     }
 
     const isPasswordCorrect = await user.comparePassword(password);
