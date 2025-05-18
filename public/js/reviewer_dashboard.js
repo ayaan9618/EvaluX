@@ -85,6 +85,10 @@ async function fillReviewerDetails() {
 
     } catch (error) {
         console.error(error);
+        if (Math.floor(error?.response?.status / 100) === 4) {
+            window.location.href = "./login.html";
+            return;
+        }
         alert("Something went wrong in fetching your details");
     }
 
@@ -92,3 +96,9 @@ async function fillReviewerDetails() {
 
 fillReviewerDetails();
 fillProjectDetails();
+
+
+async function logout() {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+}
