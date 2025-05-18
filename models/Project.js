@@ -37,6 +37,10 @@ const projectSchema = mongoose.Schema({
         type: String,
         required: [true, "Please provide a project title"]
     },
+    description: {
+        type: String,
+        required: [true, "Please provide a description"]
+    },
     gitHubRepoURL: {
         type: String,
         required: [true, "Please provide "]

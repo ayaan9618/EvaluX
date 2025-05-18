@@ -19,7 +19,18 @@ form.addEventListener("submit", async (e) => {
 
         localStorage.setItem("token", data.token);
         showMsg(data.msg, SUCCESS);
-        // window.location.href = "./otp.html";
+        
+        if (userType === "org") {
+            if (data.user.status === "UNVERIFIED")
+                window.location.href = "./org_signup.html";
+            else
+            window.location.href = "./org_dashboard.html";
+        } else if (userType === "reviewer") {
+            if (data.user.status === "UNVERIFIED")
+                window.location.href = "./reviewer_signup.html";
+            else
+                window.location.href = "./reviewer_dashboard.html";
+        }
 
     } catch (error) {
         if (error.response?.data?.msg)
