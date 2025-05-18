@@ -2,6 +2,7 @@ require("dotenv").config();
 require("express-async-errors");
 const express = require("express");
 const path = require('path');
+const fs = require('fs');
 
 const cors = require("cors");
 const { xss } = require("express-xss-sanitizer");
@@ -43,6 +44,10 @@ app.use(errorMiddleware);
 
 const start  = async () => {
     try {
+
+        const projectDir = path.join(__dirname, "./temp");
+        if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir);
+        
         // connect DB
         await connectDB(process.env.MONGO_URI);
         app.listen(PORT, "0.0.0.0", () => {

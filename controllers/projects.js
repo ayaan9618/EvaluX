@@ -1,9 +1,10 @@
 require("dotenv").config();
 const APIError = require("../errors/api-error");
 const { StatusCodes } = require("http-status-codes");
-const { Course, Project } = require("../models/Project");
+const { Course, Project, SemgrepResult } = require("../models/Project");
 const User = require("../models/User");
-const { USERTYPE, STATUS, TESTED_STATUS } = require("../db/enums");
+const { USERTYPE, STATUS, TESTED_STATUS, PROJECT_STATUS } = require("../db/enums");
+const runProjectAnalyzer = require("../assesser");
 
 const getProjectInCourse = async (req, res) => {
 
@@ -62,8 +63,15 @@ const addProject = async (req, res) => {
     // const { userId } = req.user;
     const { _id: courseId } = req.course;
     const { title, gitHubRepoURL, technologies } = req.body;
+    
+    const isValidGitHubUrl = /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/?$/.test(gitHubRepoURL);
+    if (!isValidGitHubUrl) {
+        throw new APIError(StatusCodes.BAD_REQUEST, "Invalid GitHub repository URL.");
+    }
 
     const project = await Project.create({ course: courseId, title, gitHubRepoURL, technologies });
+
+    runProjectAnalyzer(gitHubRepoURL, project._id);
 
     res.status(StatusCodes.CREATED).json({ msg: "project added", project });
 }
@@ -74,11 +82,12 @@ const getProjectById = async (req, res) => {
     const projectId = req.params.id;
 
     const project = await Project.findOne({ _id: projectId });
+    const assessment = await SemgrepResult.findOne({ projectId: projectId });
     if (!project) {
         throw new APIError(StatusCodes.NOT_FOUND, `project with id ${projectId} not found`);
     }
 
-    res.status(StatusCodes.OK).json({ project });
+    res.status(StatusCodes.OK).json({ project, assessment });
 
 }
 
@@ -94,6 +103,45 @@ const deleteProject = async (req, res) => {
     res.status(StatusCodes.OK).json({ msg: "Project deleted", project });
 }
 
+const assessProject = async (req, res) => {
+
+    const projectId = req.params.id;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+        throw new APIError(StatusCodes.NOT_FOUND, `Project with id: ${projectId} not found`);
+    }
+    if (project.tested !== TESTED_STATUS.NULL) {
+        throw new APIError(StatusCodes.FORBIDDEN, "Project already assessed");
+    }
+
+    runProjectAnalyzer(project.gitHubRepoURL, project._id);
+
+    res.status(StatusCodes.OK).json({ msg: "Project is being assessed" });
+
+}
+
+const reviewProject = async (req, res) => {
+
+    const projectId = req.params.id;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+        throw new APIError(StatusCodes.NOT_FOUND, `Project with id: ${projectId} not found`);
+    }
+    if (project.status !== PROJECT_STATUS.PENDING) {
+        throw new APIError(StatusCodes.FORBIDDEN, "Project already reviewed");
+    }
+
+    const { status, feedback } = req.body;
+
+    await Project.findByIdAndUpdate(projectId, 
+        { status: status, feedback: feedback },
+        { runValidators: true }
+    )
+}
+
 module.exports = {
-    getProjectInCourse, addProject, getProjectById, deleteProject, getAllProjects
+    getProjectInCourse, addProject, getProjectById, deleteProject, getAllProjects,
+    assessProject, reviewProject
 };
