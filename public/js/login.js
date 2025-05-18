@@ -19,6 +19,13 @@ form.addEventListener("submit", async (e) => {
 
         localStorage.setItem("token", data.token);
         showMsg(data.msg, SUCCESS);
+
+        // Redirect to the appropriate dashboard based on user type
+        if (userType === "org") {
+            window.location.href = "./org_dashboard.html";
+        } else if (userType === "reviewer") {
+            window.location.href = "./reviewer_dashboard.html";
+        }
         // window.location.href = "./otp.html";
 
     } catch (error) {
