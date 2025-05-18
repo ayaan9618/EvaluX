@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EvaluX Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Initialize global variables
+    let projects = [];
+    let courses = [];
+    let currentFilterStatus = 'all';
+    let currentCourseFilter = 'all';
+
+    // Load data from localStorage
+    function loadData() {
+      try {
+        const savedProjects = localStorage.getItem('projects');
+        const savedCourses = localStorage.getItem('courses');
+
+        console.log('Loading projects from localStorage:', savedProjects);
+        console.log('Loading courses from localStorage:', savedCourses);
+
+        projects = savedProjects ? JSON.parse(savedProjects) : [];
+        courses = savedCourses ? JSON.parse(savedCourses) : [];
+
+        console.log('Parsed projects:', projects);
+        console.log('Parsed courses:', courses);
+
+        return true;
+      } catch (error) {
+        console.error('Error loading data from localStorage:', error);
+        projects = [];
+        courses = [];
+        return false;
+      }
+    }
+
+    // Save data to localStorage
+    function saveData() {
+      localStorage.setItem('projects', JSON.stringify(projects));
+      localStorage.setItem('courses', JSON.stringify(courses));
+    }
+
+    // Add a new project
+    function addProject(projectData) {
+      if (!projectData.title || !projectData.courseId) {
+        return false;
+      }
+
+      const newProject = {
+        id: 'PRJ-' + Date.now().toString().slice(-6),
+        title: projectData.title,
+        description: projectData.description || '',
+        courseId: projectData.courseId,
+        status: projectData.status || 'pending',
+        date: projectData.date || new Date().toISOString().split('T')[0],
+        githubLink: projectData.githubLink || '',
+        tags: projectData.tags || [],
+        createdAt: new Date().toISOString()
+      };
+
+      projects.push(newProject);
+
+      // Update project count for the course
+      const course = courses.find(c => c.id === projectData.courseId);
+      if (course) {
+        course.projectCount = (course.projectCount || 0) + 1;
+      }
+
+      saveData();
+      renderProjects();
+      renderCourses();
+
+      return true;
+    }
+
+    // Add a new course with enhanced feedback
+    function addCourse(name, author = 'You') {
+      if (!name) {
+        showNotification('Please enter a course name', 'error');
+        return false;
+      }
+
+      const trimmedName = name.trim();
+      const trimmedAuthor = (author || 'You').trim();
+
+      // Check if course with same name already exists (both dynamic and default courses)
+      const courseExists = courses.some(course =>
+        course.name.toLowerCase() === trimmedName.toLowerCase()
+      );
+
+      if (courseExists) {
+        showNotification('A course with this name already exists!', 'error');
+        return false;
+      }
+
+      const newCourse = {
+        id: 'course-' + Date.now(),
+        name: trimmedName,
+        author: trimmedAuthor,
+        projectCount: 0,
+        dynamic: true,
+        createdAt: new Date().toISOString()
+      };
+
+      courses.push(newCourse);
+      saveData();
+
+      // Show success notification
+      showNotification(`Course "${newCourse.name}" added successfully!`, 'success');
+
+      // Update UI
+      renderCourses();
+      updateCourseSelect();
+
+      // Auto-select the newly added course
+      currentCourseFilter = newCourse.id;
+      filterProjects(currentFilterStatus, currentCourseFilter);
+
+      // Close the modal
+      closeAddCourseModal();
+
+      return true;
+    }
+
+    // Remove a course
+    function removeCourse(courseId) {
+      const courseIndex = courses.findIndex(c => c.id === courseId);
+      if (courseIndex === -1) return false;
+
+      // Don't allow removing if there are projects in this course
+      const projectCount = projects.filter(p => p.courseId === courseId).length;
+      if (projectCount > 0) {
+        showNotification(`Cannot remove course with ${projectCount} project(s). Delete or move the projects first.`, 'error');
+        return false;
+      }
+
+      // Remove the course
+      courses.splice(courseIndex, 1);
+      saveData();
+
+      // Update UI
+      renderCourses();
+      updateCourseSelect();
+
+      // Reset filter if the removed course was selected
+      if (currentCourseFilter === courseId) {
+        currentCourseFilter = 'all';
+        filterProjects(currentFilterStatus, 'all');
+      }
+
+      showNotification('Course removed successfully', 'success');
+      return true;
+    }
+
+    // Show notification function
+    function showNotification(message, type = 'info') {
+      // You can implement a proper notification system here
+      // For now, we'll use a simple alert
+      const types = {
+        success: '✅',
+        error: '❌',
+        info: 'ℹ️',
+        warning: '⚠️'
+      };
+
+      alert(`${types[type] || ''} ${message}`);
+    }
+
+    // Render courses in sidebar with enhanced UI
+    function renderCourses() {
+      const coursesList = document.getElementById('coursesList');
+      const noCoursesMessage = document.getElementById('noCoursesMessage');
+
+      if (!coursesList) return;
+
+      // Clear existing courses but keep the no courses message structure
+      coursesList.innerHTML = '';
+
+      if (courses.length === 0) {
+        if (noCoursesMessage) {
+          noCoursesMessage.style.display = 'block';
+        } else {
+          coursesList.innerHTML = `
+              <div class="text-center py-4 text-sm text-gray-300" id="noCoursesMessage">
+                No courses yet. Add your first course!
+              </div>`;
+        }
+        return;
+      }
+
+      // Hide no courses message if there are courses
+      if (noCoursesMessage) {
+        noCoursesMessage.style.display = 'none';
+      }
+
+      // Add each course to the sidebar with enhanced UI
+      courses.forEach((course, index) => {
+        renderCourseInSidebar(course, index);
+      });
+
+      // Update the course select dropdown in the add project form
+      updateCourseSelect();
+    }
+
+    // Render a single course in sidebar with enhanced UI
+    function renderCourseInSidebar(course, index) {
+      const coursesList = document.getElementById('coursesList');
+      if (!coursesList) return;
+
+      // Color variations for course indicators
+      const colors = [
+        'from-cyan-400 to-blue-500',
+        'from-purple-400 to-pink-500',
+        'from-green-400 to-emerald-500',
+        'from-yellow-400 to-orange-500',
+        'from-pink-400 to-rose-500',
+        'from-indigo-400 to-violet-500'
+      ];
+      const colorIndex = index % colors.length;
+
+      const courseEl = document.createElement('div');
+      courseEl.className = `group relative overflow-hidden bg-gray-800/50 hover:bg-gray-700/50 backdrop-blur-sm rounded-lg p-2 cursor-pointer transition-all duration-200 hover:shadow-md border border-gray-700/50 hover:border-cyan-400/30`;
+      courseEl.setAttribute('data-course-id', course.id);
+      courseEl.onclick = (e) => {
+        // Don't trigger if clicking on the delete button
+        if (!e.target.closest('.delete-course-btn')) {
+          filterProjects(currentFilterStatus, course.id);
+          // Update active state
+          document.querySelectorAll('.course-card').forEach(el => el.classList.remove('ring-2', 'ring-cyan-400'));
+          courseEl.classList.add('ring-2', 'ring-cyan-400');
+        }
+      };
+
+      courseEl.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0 flex items-center space-x-2">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br ${colors[colorIndex]} flex-shrink-0 flex items-center justify-center text-white font-bold text-xs">
+                ${course.name.charAt(0).toUpperCase()}
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-xs font-semibold text-white truncate" title="${course.name}">
+                  ${course.name}
+                </h4>
+              </div>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-[10px] bg-cyan-900/50 text-cyan-300 px-1.5 py-0.5 rounded-md flex items-center">
+                <svg class="w-2.5 h-2.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                ${course.projectCount || 0}
+              </span>
+              <button 
+                class="delete-course-btn p-1 text-gray-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                title="Remove course"
+                onclick="event.stopPropagation(); if(confirm('Are you sure you want to remove this course? This will not delete any projects.')) { removeCourse('${course.id}'); }"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="mt-1.5 pt-1.5 border-t border-gray-700/50">
+            <div class="w-full bg-gray-700 rounded-full h-1">
+              <div class="bg-gradient-to-r ${colors[colorIndex]} h-1 rounded-full" style="width: ${Math.min(100, ((course.projectCount || 0) / 10) * 100)}%"></div>
+            </div>
+          </div>
+        `;
+
+      // Add the course card class for selection
+      courseEl.classList.add('course-card');
+
+      // If this is the first course, make it active by default
+      if (index === 0) {
+        courseEl.classList.add('ring-2', 'ring-cyan-400');
+      }
+
+      coursesList.appendChild(courseEl);
+    }
+
+    // Render projects
+    function renderProjects() {
+      const projectGrid = document.querySelector('.project-grid');
+      if (!projectGrid) return;
+
+      // Clear existing projects
+      projectGrid.innerHTML = '';
+
+      // Filter projects based on current filters
+      let filteredProjects = [...projects];
+
+      if (currentFilterStatus !== 'all') {
+        filteredProjects = filteredProjects.filter(project => project.status === currentFilterStatus);
+      }
+
+      if (currentCourseFilter !== 'all') {
+        filteredProjects = filteredProjects.filter(project => project.courseId === currentCourseFilter);
+      }
+
+      // Render filtered projects
+      filteredProjects.forEach(project => {
+        renderProject(project);
+      });
+    }
+
+    // Render a single project
+    function renderProject(project) {
+      const projectGrid = document.querySelector('.project-grid');
+      if (!projectGrid) return;
+
+      // Get course name for display
+      const course = courses.find(c => c.id === project.courseId);
+      const courseName = course ? course.name : 'Unknown Course';
+
+      // Status badge styling
+      let statusBadge = 'bg-gray-800 text-gray-300';
+      let statusText = 'Draft';
+
+      if (project.status) {
+        switch (project.status.toString().toLowerCase()) {
+          case 'authenticated':
+            statusBadge = 'bg-green-900/50 text-green-300';
+            statusText = 'Authenticated';
+            break;
+          case 'in-progress':
+          case 'in_progress':
+            statusBadge = 'bg-yellow-900/50 text-yellow-300';
+            statusText = 'In Progress';
+            break;
+          case 'review':
+            statusBadge = 'bg-pink-900/50 text-pink-300';
+            statusText = 'In Review';
+            break;
+          case 'due':
+            statusBadge = 'bg-orange-900/50 text-orange-300';
+            statusText = 'Due Soon';
+            break;
+          case 'registered':
+            statusBadge = 'bg-purple-900/50 text-purple-300';
+            statusText = 'Registered';
+            break;
+          default:
+            statusText = project.status || 'Draft';
+        }
+      }
+
+      const projectEl = document.createElement('div');
+      projectEl.className = 'project-card bg-gray-900 p-5 rounded-2xl shadow-md border border-gray-800 hover:border-cyan-400 transition-colors group';
+      projectEl.setAttribute('data-status', project.status);
+      projectEl.setAttribute('data-course-id', project.courseId);
+
+      projectEl.innerHTML = `
+          <div class="flex flex-col h-full">
+            <div class="flex-grow">
+              <div class="flex justify-between items-start gap-2 mb-2">
+                <p class="font-semibold text-cyan-400 truncate">${courseName}</p>
+                <span class="px-2 py-0.5 text-xs rounded-full ${statusBadge}">
+                  ${statusText}
+                </span>
+              </div>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-lg font-bold text-white flex items-center">
+                  ${project.title}
+                  <span class="ml-2 text-xs font-mono bg-gray-700/50 text-gray-300 px-2 py-0.5 rounded">${project.id}</span>
+                </p>
+                <button 
+                  class="view-project-btn px-3 py-1 text-xs bg-cyan-600 hover:bg-cyan-700 text-white rounded-md flex items-center gap-1 transition-colors"
+                  data-id="${project.id}"
+                  title="View Project"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  View
+                </button>
+              </div>
+              <p class="text-gray-400 text-sm line-clamp-3 mb-4">${project.description || 'No description provided'}</p>
+              ${project.tags && project.tags.length > 0 ? `
+                <div class="flex flex-wrap gap-1.5 mb-4">
+                  ${project.tags.map(tag => `
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-800 text-gray-300">
+                      ${tag.trim()}
+                    </span>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-800 mt-auto">
+              <span class="px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-300 font-mono">${project.id}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-400">${project.date || 'No due date'}</span>
+                <button class="edit-project-btn text-cyan-400 hover:text-cyan-300" data-id="${project.id}">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+      // Add edit button event listener
+      const editBtn = projectEl.querySelector('.edit-project-btn');
+      if (editBtn) {
+        editBtn.addEventListener('click', () => openEditProjectModal(project.id));
+      }
+
+      projectGrid.appendChild(projectEl);
+    }
+
+    // Render courses in sidebar
+    function renderCourses() {
+      console.log('renderCourses called');
+      const dynamicCoursesContainer = document.getElementById('dynamicCourses');
+      console.log('dynamicCoursesContainer:', dynamicCoursesContainer);
+
+      if (!dynamicCoursesContainer) {
+        console.error('dynamicCoursesContainer not found!');
+        return;
+      }
+
+      console.log('Current courses:', courses);
+
+      // Clear existing dynamic courses
+      dynamicCoursesContainer.innerHTML = '';
+
+      // Render each dynamic course
+      let dynamicCount = 0;
+      courses.forEach((course, index) => {
+        console.log(`Processing course ${index}:`, course);
+        if (course.dynamic) {
+          console.log('Rendering dynamic course:', course);
+          renderCourseInSidebar(course, index);
+          dynamicCount++;
+        }
+      });
+
+      console.log(`Rendered ${dynamicCount} dynamic courses`);
+    }
+
+    // Update course select dropdowns in forms
+    function updateCourseSelect() {
+      const courseSelects = [
+        document.getElementById('projectCourse'),
+        document.getElementById('editProjectCourse')
+      ];
+
+      courseSelects.forEach(select => {
+        if (!select) return;
+
+        // Save current value
+        const currentValue = select.value;
+
+        // Clear existing options except the first one (default/placeholder)
+        while (select.options.length > 1) {
+          select.remove(1);
+        }
+
+        // Add courses to select
+        courses.forEach(course => {
+          const option = document.createElement('option');
+          option.value = course.id;
+          option.textContent = course.name;
+          select.appendChild(option);
+        });
+
+        // Restore selected value if it still exists
+        if (currentValue && [...select.options].some(opt => opt.value === currentValue)) {
+          select.value = currentValue;
+        }
+      });
+    }
+
+    // Filter projects based on status and course
+    function filterProjects(statusFilter = 'all', courseFilter = 'all') {
+      currentFilterStatus = statusFilter;
+      currentCourseFilter = courseFilter;
+
+      // Update active filter buttons
+      document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        if (btn.dataset.status === statusFilter) {
+          btn.classList.add('bg-cyan-600/50', 'text-white');
+          btn.classList.remove('text-gray-400', 'hover:bg-white/5');
+        } else {
+          btn.classList.remove('bg-cyan-600/50', 'text-white');
+          btn.classList.add('text-gray-400', 'hover:bg-white/5');
+        }
+      });
+
+      // Update active course filter
+      document.querySelectorAll('.course-card').forEach(card => {
+        if (card.dataset.id === courseFilter) {
+          card.classList.add('bg-white/10');
+        } else {
+          card.classList.remove('bg-white/10');
+        }
+      });
+
+      // Re-render projects with new filters
+      renderProjects();
+    }
+
+    // Open edit project modal
+    function openEditProjectModal(projectId) {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) return;
+
+      // Set form values
+      document.getElementById('editProjectId').value = project.id;
+      document.getElementById('editProjectTitle').value = project.title || '';
+      document.getElementById('editProjectDescription').value = project.description || '';
+      document.getElementById('editProjectCourse').value = project.courseId || '';
+      document.getElementById('editProjectStatus').value = project.status || 'not-started';
+      document.getElementById('editProjectDate').value = project.date || '';
+      document.getElementById('editProjectGithub').value = project.githubLink || '';
+      document.getElementById('editProjectTags').value = project.tags ? project.tags.join(', ') : '';
+
+      // Show modal
+      document.getElementById('editProjectModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Update project function
+    function updateProject(projectId, updates) {
+      const index = projects.findIndex(p => p.id === projectId);
+      if (index === -1) return false;
+
+      // Update project
+      projects[index] = { ...projects[index], ...updates };
+
+      // Save to localStorage
+      saveData();
+
+      // Re-render projects
+      renderProjects();
+
+      return true;
+    }
+
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['IBM Plex Mono', 'monospace'],
+          },
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer base {
+        body {
+          @apply font-sans bg-black text-white;
+        }
+      }
+    </style>
+</head>
+
+<body class="bg-black text-white">
+  <!-- Top Header -->
+  <header
+    class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center backdrop-blur-md bg-white/5 border-b border-white/10 shadow-md">
+    <h1 class="text-2xl font-bold text-cyan-400">
+      Evalu<span class="text-[#ad46ff]">X</span>
+    </h1>
+
+    <!-- Profile Dropdown -->
+    <div class="relative" id="profileDropdownWrapper">
+      <button id="profileBtn" class="flex items-center gap-2 focus:outline-none z-50 relative">
+        <img
+          src="data:image/png;base64,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"
+          alt="Profile" class="w-9 h-9 rounded-full border border-cyan-400" />
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Profile Sidebar Dropdown Panel -->
+  <div id="profileMenu"
+    class="hidden fixed right-0 top-[4.5rem] bottom-0 w-72 bg-white text-black dark:bg-zinc-900 dark:text-white rounded-l-xl shadow-lg ring-1 ring-black/5 z-40 overflow-y-auto pointer-events-auto">
+    <!-- Top Profile Info -->
+    <div class="px-4 py-3 text-center border-b border-gray-300 dark:border-zinc-700">
+      <div
+        class="w-14 h-14 mx-auto rounded-full overflow-hidden shadow-md bg-cyan-600 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </div>
+      <p class="text-base font-bold mt-2">Udemy</p>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Inc — Business</p>
+      <!-- <p class="text-sm underline cursor-pointer">Contact</p> -->
+    </div>
+
+    <!-- Links -->
+    <div class="py-2 border-b border-gray-200 dark:border-zinc-700">
+      <a href="/profile" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">Profile</a>
+      <a href="/dashboard" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">Dashboard</a>
+      <a href="/settings" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800">Settings</a>
+      <a href="/logout"
+        class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-zinc-800 text-red-500 font-semibold">Logout</a>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="px-4 py-3">
+      <h2 class="text-sm font-semibold mb-2">Stats Overview</h2>
+      <svg viewBox="0 0 32 32" class="w-24 h-24 mx-auto mb-3">
+        <circle r="16" cx="16" cy="16" fill="#ccc" />
+        <circle r="16" cx="16" cy="16" fill="transparent" stroke="#22d3ee" stroke-width="32" stroke-dasharray="20 80"
+          transform="rotate(-90) translate(-32)" />
+        <circle r="16" cx="16" cy="16" fill="transparent" stroke="#3b82f6" stroke-width="32" stroke-dasharray="30 70"
+          transform="rotate(-90) translate(-32)" />
+        <circle r="16" cx="16" cy="16" fill="transparent" stroke="#f43f5e" stroke-width="32" stroke-dasharray="50 50"
+          transform="rotate(-90) translate(-32)" />
+      </svg>
+      <ul class="text-xs space-y-1">
+        <li>
+          <span class="inline-block w-3 h-3 bg-cyan-400 mr-2 rounded-full"></span>Pending: 10%
+        </li>
+        <li>
+          <span class="inline-block w-3 h-3 bg-blue-500 mr-2 rounded-full"></span>Authenticated: 30%
+        </li>
+        <li>
+          <span class="inline-block w-3 h-3 bg-rose-500 mr-2 rounded-full"></span>Rejected: 60%
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="flex pt-20 h-[calc(100vh-5rem)]">
+    <!-- Left Sidebar -->
+    <aside class="w-64 bg-cyan-500 text-white flex flex-col p-4 rounded-tr-3xl rounded-br-3xl shadow-lg">
+      <!-- Title -->
+      <h2 class="text-xl font-bold mb-4">My Courses</h2>
+
+      <!-- Scrollable Course List -->
+      <div class="space-y-1.5 max-h-80 overflow-y-auto pr-1 custom-scrollbar" id="coursesList">
+        <!-- Dynamic courses will be added here -->
+        <div id="dynamicCourses"></div>
+        <!-- No courses message (initially hidden) -->
+        <div id="noCoursesMessage" class="text-center py-4 text-sm text-gray-300 hidden">
+          No courses yet. Add your first course!
+        </div>
+      </div>
+
+      <!-- Bottom Fixed Buttons -->
+      <div class="pt-4 mt-4 border-t border-white/30 space-y-2">
+        <button onclick="openAddCourseModal()"
+          class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition">
+          Add Course
+        </button>
+        <!-- <button
+            class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
+          >
+            Manage Access
+          </button> -->
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 bg-black overflow-y-auto p-6">
+      <!-- Filter Bar -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <p id="filterStatus" class="text-sm text-gray-400">Showing all projects</p>
+          <button onclick="openAddProjectModal()"
+            class="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Project
+          </button>
+        </div>
+        <div class="bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-1.5 max-w-5xl mx-auto">
+          <div class="flex flex-wrap items-center justify-center gap-2">
+            <span class="text-sm font-medium text-gray-300 px-3 py-1.5 hidden sm:block">Filter by status:</span>
+
+            <button onclick="filterProjects('all')"
+              class="filter-btn active px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+              data-status="all">
+              <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+              All Projects
+              <span class="ml-1 px-2 py-0.5 bg-gray-700/50 rounded-full text-xs">0</span>
+            </button>
+
+            <button onclick="filterProjects('authenticated')"
+              class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+              data-status="authenticated">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              Authenticated
+            </button>
+
+            <button onclick="filterProjects('registered')"
+              class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+              data-status="registered">
+              <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+              Registered
+            </button>
+
+            <button onclick="filterProjects('pending')"
+              class="filter-btn px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
+              data-status="pending">
+              <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+              Pending
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Grid -->
+      <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Projects will be dynamically inserted here -->
+
+        <!-- Add New Project Button -->
+        <button onclick="openAddProjectModal()"
+          class="flex flex-col items-center justify-center h-full min-h-[300px] border-2 border-dashed border-gray-700 rounded-2xl hover:border-cyan-400 hover:bg-gray-800/50 transition-colors group">
+          <div
+            class="w-16 h-16 mb-3 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
+            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <p class="text-lg font-medium text-cyan-400">Add New Project</p>
+          <p class="text-sm text-gray-400 mt-1">Click to create a new project</p>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Course Modal -->
+  <div id="addCourseModal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div
+      class="bg-gray-900 bg-opacity-90 backdrop-blur-lg rounded-2xl p-6 w-full max-w-md border border-gray-700 shadow-2xl">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-700">
+        <h3 class="text-2xl font-bold text-cyan-400">Add New Course</h3>
+        <button onclick="closeAddCourseModal()" class="text-gray-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <form id="addCourseForm" class="space-y-4">
+        <div>
+          <label for="courseName" class="block text-sm font-medium text-gray-300 mb-1">Course Name</label>
+          <input type="text" id="courseName" name="courseName" required
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            placeholder="Enter course name" />
+        </div>
+        <div>
+          <label for="courseAuthor" class="block text-sm font-medium text-gray-300 mb-1">Instructor </label>
+          <input type="text" id="courseAuthor" name="courseAuthor"
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            placeholder="Your name" />
+        </div>
+        <div class="pt-2">
+          <button type="submit"
+            class="w-full px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white font-medium rounded-lg transition-colors">
+            Add Course
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div id="addProjectModal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
+    <div
+      class="relative bg-gray-900 bg-opacity-90 backdrop-blur-lg rounded-2xl w-full max-w-2xl border border-gray-700 shadow-2xl my-8 max-h-[90vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center p-6 pb-4 border-b border-gray-700 flex-shrink-0">
+        <h3 class="text-2xl font-bold text-cyan-400">Add New Project</h3>
+        <button onclick="closeAddProjectModal()" class="text-gray-400 hover:text-white transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Scrollable Content -->
+      <div class="overflow-y-auto flex-1 p-6 pt-4">
+        <form id="addProjectForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="projectCourse" class="block text-sm font-medium text-gray-300 mb-1">Course Name</label>
+              <select id="projectCourse" name="projectCourse" required
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                <option value="">Select a course</option>
+                <option value="Web Development 101">Web Development 101</option>
+                <option value="Data Science">Data Science</option>
+                <option value="Mobile Development">Mobile Development</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Cloud Computing">Cloud Computing</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="projectTitle" class="block text-sm font-medium text-gray-300 mb-1">Project Title</label>
+              <input type="text" id="projectTitle" name="projectTitle" required
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="Enter project title" />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="projectDescription" class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+              <textarea id="projectDescription" name="projectDescription" rows="3"
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="Enter project description"></textarea>
+            </div>
+
+            <div>
+              <label for="projectDueDate" class="block text-sm font-medium text-gray-300 mb-1">Due Date</label>
+              <input type="date" id="projectDueDate" name="projectDueDate"
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent" />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="projectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link </label>
+              <input type="url" id="projectGithub" name="projectGithub"
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="https://github.com/username/repo" />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="projectTags" class="block text-sm font-medium text-gray-300 mb-1">Tags
+                (comma-separated)</label>
+              <input type="text" id="projectTags" name="projectTags"
+                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                placeholder="tag1, tag2, tag3" />
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-800">
+            <button type="button" onclick="closeAddProjectModal()"
+              class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white">
+              Cancel
+            </button>
+            <button type="submit"
+              class="px-6 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-700 transition-colors">
+              Create Project
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Project Modal -->
+  <div id="editProjectModal"
+    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div
+      class="bg-gray-900 bg-opacity-90 backdrop-blur-lg rounded-2xl p-6 w-full max-w-2xl border border-gray-700 shadow-2xl">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-700">
+        <h3 class="text-2xl font-bold text-cyan-400">Edit Project</h3>
+        <button onclick="closeEditProjectModal()" class="text-gray-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="editProjectForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="editProjectCourse" class="block text-sm font-medium text-gray-300 mb-1">Course Name</label>
+            <select id="editProjectCourse" name="editProjectCourse" required
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+              <option value="">Select a course</option>
+              <option value="Web Development 101">Web Development 101</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Mobile Development">Mobile Development</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="Cloud Computing">Cloud Computing</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="editProjectTitle" class="block text-sm font-medium text-gray-300 mb-1">Project Title</label>
+            <input type="text" id="editProjectTitle" name="editProjectTitle" required
+              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              placeholder="Enter project title">
+          </div>
+        </div>
+
+        <div>
+          <label for="editProjectDescription" class="block text-sm font-medium text-gray-300 mb-1">Project
+            Description</label>
+          <textarea id="editProjectDescription" name="editProjectDescription" rows="3" required
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            placeholder="Describe your project in detail..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="editProjectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link</label>
+            <input type="url" id="editProjectGithub"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              placeholder="https://github.com/username/repo">
+          </div>
+          <div class="md:col-span-2">
+            <label for="editProjectTags" class="block text-sm font-medium text-gray-300 mb-1">Tags
+              (comma-separated)</label>
+            <input type="text" id="editProjectTags"
+              class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              placeholder="e.g., AI, Machine Learning, Python">
+            <p class="mt-1 text-xs text-gray-400">Add or update tags for this project</p>
+          </div>
+        </div>
+
+
+
+        <div>
+          <label for="editProjectDate" class="block text-sm font-medium text-gray-300 mb-1">Date</label>
+          <input type="date" id="editProjectDate" name="editProjectDate" required
+            class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+        </div>
+
+        <div class="flex justify-end space-x-3 pt-4 border-t border-gray-800">
+          <button type="button" onclick="closeEditProjectModal()"
+            class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white">
+            Cancel
+          </button>
+          <button type="submit"
+            class="px-6 py-2 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-700 transition-colors">
+            Update Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    // Function to populate edit form with project data
+    function populateEditForm(project) {
+      if (!project) return;
+
+      // Store the project ID in a data attribute on the form
+      const form = document.getElementById('editProjectForm');
+      form.dataset.projectId = project.id;
+
+      document.getElementById('editProjectTitle').value = project.title || '';
+      document.getElementById('editProjectDescription').value = project.description || '';
+      document.getElementById('editProjectCourse').value = project.courseId || '';
+
+      // Format date for date input (YYYY-MM-DD)
+      const date = project.date ? new Date(project.date) : new Date();
+      const formattedDate = date.toISOString().split('T')[0];
+      document.getElementById('editProjectDate').value = formattedDate;
+      document.getElementById('editProjectGithub').value = project.githubLink || '';
+
+      // Set tags
+      const tags = project.tags ?
+        (Array.isArray(project.tags) ? project.tags.join(', ') : project.tags) : '';
+      document.getElementById('editProjectTags').value = tags;
+    }
+
+    // Function to open edit project modal
+    function openEditProjectModal(projectId) {
+      const project = projects.find(p => p.id === projectId);
+      if (!project) return;
+
+      // Populate form
+      populateEditForm(project);
+
+      // Show modal
+      document.getElementById('editProjectModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close edit project modal
+    function closeEditProjectModal() {
+      document.getElementById('editProjectModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Function to close add project modal
+    function closeAddProjectModal() {
+      document.getElementById('addProjectModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Function to open add project modal
+    function openAddProjectModal() {
+      document.getElementById('addProjectModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Function to open add course modal
+    function openAddCourseModal() {
+      document.getElementById('addCourseModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Function to close add course modal
+    function closeAddCourseModal() {
+      document.getElementById('addCourseModal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }
+
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM fully loaded');
+
+      // Initialize default courses if none exist
+      if (!localStorage.getItem('courses')) {
+        const defaultCourses = [
+          { id: 'course-ai', name: 'Intro to AI', author: 'John Doe', projectCount: 0, dynamic: false },
+          { id: 'course-wd', name: 'React for Beginners', author: 'Jane Smith', projectCount: 0, dynamic: false },
+          { id: 'course-ds', name: 'ML Project Evaluator', author: 'Ankit Patel', projectCount: 0, dynamic: false }
+        ];
+        localStorage.setItem('courses', JSON.stringify(defaultCourses));
+      }
+
+      // Load data from localStorage
+      loadData();
+      console.log('Courses loaded:', courses);
+
+      // Flag to track if forms have been initialized
+      let formsInitialized = false;
+
+      // Initialize the application
+      const initApp = () => {
+        try {
+          // Initial render
+          renderProjects();
+          renderCourses();
+          updateCourseSelect();
+          console.log('Initial render completed');
+        } catch (error) {
+          console.error('Error during initial render:', error);
+        }
+
+        // Only set up forms once
+        if (formsInitialized) return;
+        formsInitialized = true;
+
+        // Setup course form
+        const setupCourseForm = () => {
+          const form = document.getElementById('addCourseForm');
+          if (!form) return;
+
+          // Remove any existing event listeners to prevent duplicates
+          const newForm = form.cloneNode(true);
+          form.parentNode.replaceChild(newForm, form);
+
+          newForm.onsubmit = function (e) {
+            e.preventDefault();
+            const name = document.getElementById('courseName')?.value;
+            const author = document.getElementById('courseAuthor')?.value || 'You';
+            if (name) {
+              addCourse(name, author);
+              this.reset();
+              closeAddCourseModal();
+            }
+            return false;
+          };
+        };
+
+        // Setup project form
+        const setupProjectForm = () => {
+          const form = document.getElementById('addProjectForm');
+          if (!form) return;
+
+          // Remove any existing event listeners to prevent duplicates
+          const newForm = form.cloneNode(true);
+          form.parentNode.replaceChild(newForm, form);
+
+          newForm.onsubmit = function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const projectData = {
+              title: formData.get('projectTitle'),
+              description: formData.get('projectDescription'),
+              courseId: formData.get('projectCourse'),
+              status: 'pending',
+              date: formData.get('projectDueDate') || new Date().toISOString().split('T')[0],
+              githubLink: formData.get('projectGithub') || '',
+              tags: formData.get('projectTags') ? formData.get('projectTags').split(',').map(tag => tag.trim()) : []
+            };
+
+            if (addProject(projectData)) {
+              this.reset();
+              closeAddProjectModal();
+            }
+            return false;
+          };
+        };
+
+        // Initialize forms
+        setupCourseForm();
+        setupProjectForm();
+      };
+
+      // Run initialization
+      initApp();
+
+      // Close modals when clicking outside
+      window.onclick = function (event) {
+        // Project modal
+        const projectModal = document.getElementById('addProjectModal');
+        if (event.target === projectModal) {
+          closeAddProjectModal();
+        }
+
+        // Edit project modal
+        const editProjectModal = document.getElementById('editProjectModal');
+        if (event.target === editProjectModal) {
+          closeEditProjectModal();
+        }
+
+        // Course modal
+        const courseModal = document.getElementById('addCourseModal');
+        if (event.target === courseModal) {
+          closeAddCourseModal();
+        }
+      };
+
+      // Function to save projects to localStorage
+      function saveProjects() {
+        localStorage.setItem('projects', JSON.stringify(projects));
+      }
+
+      // Edit project form submission
+      const editProjectForm = document.getElementById('editProjectForm');
+      if (editProjectForm) {
+        editProjectForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const projectId = this.dataset.projectId;
+          if (!projectId) {
+            console.error('Error: Project ID is missing from form data');
+            alert('Error: Unable to update project. Please try again.');
+            return;
+          }
+
+          const projectData = {
+            id: projectId,
+            title: this.querySelector('#editProjectTitle').value,
+            description: this.querySelector('#editProjectDescription').value,
+            courseId: this.querySelector('#editProjectCourse').value,
+            // Keep the existing status or default to 'pending'
+            status: projects.find(p => p.id === projectId)?.status || 'pending',
+            date: this.querySelector('#editProjectDate').value || new Date().toISOString().split('T')[0],
+            githubLink: this.querySelector('#editProjectGithub').value,
+            tags: this.querySelector('#editProjectTags').value
+              ? this.querySelector('#editProjectTags').value.split(',').map(tag => tag.trim())
+              : []
+          };
+
+          console.log('Updating project with data:', projectData);
+
+          // Find the project index
+          const projectIndex = projects.findIndex(p => p.id === projectId);
+
+          if (projectIndex !== -1) {
+            // Update the project
+            projects[projectIndex] = { ...projects[projectIndex], ...projectData };
+
+            // Save to localStorage
+            saveProjects();
+
+            // Re-render projects
+            renderProjects();
+
+            // Close modal
+            closeEditProjectModal();
+
+            alert('Project updated successfully!');
+          } else {
+            console.error('Project not found with ID:', projectId);
+            alert('Project not found. Please try again.');
+          }
+        });
+      }
+
+      // Set default date for project due date
+      const projectDueDate = document.getElementById('projectDueDate');
+      if (projectDueDate) {
+        const today = new Date().toISOString().split('T')[0];
+        projectDueDate.value = today;
+        projectDueDate.min = today; // Prevent selecting past dates
+      }
+    });
+  </script>
+</body>
+
+</html>
