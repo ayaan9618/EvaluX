@@ -103,7 +103,7 @@
         <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-cyan-400 drop-shadow-md">
           EvaluX
         </h1>
-        <p class="text-gray-400 mt-2 text-sm sm:text-base">AI-Powered Certificate Validation</p>
+        <p class="text-gray-400 mt-2 text-sm sm:text-base"> Project Validation serieves</p>
       </a>
     </div>
 
@@ -121,8 +121,8 @@
         </button>
       </div>
 
-      <form action="#" method="POST" class="space-y-6">
-        <input type="hidden" name="role" id="selected-role" value="course-seller" />
+      <form id="loginForm" class="space-y-6">
+        <input type="hidden" name="role" id="selected-role" value="org" />
         <div>
           <label for="email" class="block text-sm font-semibold text-gray-300">Email Address</label>
           <input type="email" id="email" name="email" required class="input-field" />
@@ -131,6 +131,10 @@
           <label for="password" class="block text-sm font-semibold text-gray-300">Password</label>
           <input type="password" id="password" name="password" required class="input-field" />
         </div>
+        <p
+            id="infoErrorMsg"
+            class="text-center font-medium hidden"
+          ></p>
         <div class="flex justify-center">
           <button type="submit"
             class="w-[100%] px-8 py-3 text-lg font-semibold bg-cyan-500 text-black rounded-full shadow-md hover:bg-cyan-600 transition-all cursor-pointer">
@@ -159,7 +163,7 @@
       reviewerBtn.classList.add("inactive");
       reviewerBtn.setAttribute("aria-pressed", "false");
 
-      roleInput.value = "course-seller";
+      roleInput.value = "org";
     });
 
     reviewerBtn.addEventListener("click", () => {
@@ -174,6 +178,10 @@
       roleInput.value = "reviewer";
     });
   </script>
+
+  <script src="./js/lib/axios.min.js"></script>
+  <script src="./js/utility/infoErrorMsg.js"></script>
+  <script src="./js/login.js"></script>
 </body>
 
 </html>

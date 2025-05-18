@@ -2,11 +2,14 @@ require("dotenv").config();
 require("express-async-errors");
 const express = require("express");
 const path = require('path');
+const fs = require('fs');
 
 const cors = require("cors");
 const { xss } = require("express-xss-sanitizer");
 
 const authRoutes = require("./routes/auth");
+const courseRoutes = require("./routes/courses");
+const projectRoutes = require("./routes/projects");
 
 const notFoundMiddleware = require("./middleware/not-found");
 const errorMiddleware = require("./middleware/error-handler");
@@ -24,6 +27,8 @@ app.use(express.static(path.join(__dirname, "./public")));
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Landing page
 app.get('/', (req, res) => {
@@ -39,6 +44,10 @@ app.use(errorMiddleware);
 
 const start  = async () => {
     try {
+
+        const projectDir = path.join(__dirname, "./temp");
+        if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir);
+        
         // connect DB
         await connectDB(process.env.MONGO_URI);
         app.listen(PORT, "0.0.0.0", () => {

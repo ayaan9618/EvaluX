@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details | EvaluX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --bg-dark: #020617;
+            --bg-darker: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.5);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --border-radius: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-top: 5rem;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 50;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Project Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: var(--text-light);
+            word-break: break-all;
+        }
+
+        .info-value a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .status-rejected {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Test Results */
+        .test-results {
+            margin-top: 1.5rem;
+        }
+
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .test-item:last-child {
+            border-bottom: none;
+        }
+
+        .test-name {
+            color: var(--text-light);
+        }
+
+        .test-status {
+            font-weight: 500;
+        }
+
+        .test-passed {
+            color: #22c55e;
+        }
+
+        .test-failed {
+            color: #ef4444;
+        }
+
+        /* Feedback Section */
+        .feedback-section {
+            margin-top: 2rem;
+        }
+
+        .feedback-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with only logo -->
+    <header class="header">
+        <a href="#" class="logo">EvaluX</a>
+    </header>
+
+    <main class="container">
+        <!-- Project Title -->
+        <h1>Project Title</h1>
+        
+        <!-- Project Header -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1; min-width: 300px;">
+                    <h2>Description</h2>
+                    <p style="margin: 0.5rem 0 1rem; color: var(--text-muted);">
+                        This is a detailed description of the project. It explains what the project is about, its purpose, and any other relevant information that helps understand the project better.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 0.75rem; flex-shrink: 0;">
+                    <a href="https://github.com/username/project-repo" target="_blank" class="btn btn-outline">
+                        <i class="fab fa-github"></i>
+                        GitHub Repo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Information -->
+        <div class="card">
+            <h2>Project Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Course Name</div>
+                    <div class="info-value">Advanced Web Development</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Date Validated/Retrieved</div>
+                    <div class="info-value">May 18, 2025</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">
+                        <span class="status-badge status-approved">
+                            <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                            Approved
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="card">
+            <h2>Test Results</h2>
+            <div class="test-results">
+                <div class="test-item">
+                    <span class="test-name">Code Quality Check</span>
+                    <span class="test-status test-passed">
+                        <i class="fas fa-check" style="margin-right: 0.25rem;"></i>
+                        Passed
+                    </span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Functionality Tests</span>
+                    <span class="test-status test-passed">
+                        <i class="fas fa-check" style="margin-right: 0.25rem;"></i>
+                        8/10 Passed
+                    </span>
+                </div>
+                <div class="test-item">
+                    <span class="test-name">Performance Test</span>
+                    <span class="test-status test-failed">
+                        <i class="fas fa-times" style="margin-right: 0.25rem;"></i>
+                        Failed
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="card">
+            <h2>Feedback</h2>
+            <div class="feedback-section">
+                <div class="feedback-content">
+                    The project demonstrates a good understanding of the core concepts. The code is well-structured and follows best practices. However, there are a few areas that could be improved:
+                    
+                    1. Performance optimization is needed for the data processing module.
+                    2. Error handling could be more robust in the API endpoints.
+                    3. Consider adding more test cases for edge cases.
+                    
+                    Overall, great work! The project meets most of the requirements and shows good attention to detail.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple script to handle any interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add any interactive functionality here if needed
+        });
+    </script>
+</body>
+</html>
