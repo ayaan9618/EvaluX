@@ -122,8 +122,8 @@
         </button>
       </div>
 
-      <form action="#" method="POST" class="space-y-6">
-        <input type="hidden" name="role" id="selected-role" value="course-seller" />
+      <form id="signupForm" class="space-y-6">
+        <input type="hidden" name="role" id="selected-role" value="org" />
         <div>
           <label for="email" class="block text-sm font-semibold text-gray-300">Email Address</label>
           <input type="email" id="email" name="email" required class="input-field" />
@@ -137,6 +137,10 @@
             Password</label>
           <input type="password" id="confirm-password" name="confirm-password" required class="input-field" />
         </div>
+        <p
+            id="infoErrorMsg"
+            class="text-center font-medium hidden"
+          ></p>
         <div class="flex justify-center">
           <button type="submit"
             class="w-[100%] px-8 py-3 text-lg font-semibold bg-cyan-500 text-black rounded-full shadow-md hover:bg-cyan-600 transition-all cursor-pointer">
@@ -167,7 +171,7 @@
       reviewerBtn.classList.add("inactive");
       reviewerBtn.setAttribute("aria-pressed", "false");
 
-      roleInput.value = "course-seller";
+      roleInput.value = "org";
     });
 
     reviewerBtn.addEventListener("click", () => {
@@ -182,6 +186,9 @@
       roleInput.value = "reviewer";
     });
   </script>
+  <script src="./js/lib/axios.min.js"></script>
+  <script src="./js/utility/infoErrorMsg.js"></script>
+  <script src="./js/signup.js"></script>
 </body>
 
 </html>
