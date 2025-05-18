@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | EvaluX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Variables */
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --bg-dark: #020617;
+            --bg-darker: #0f172a;
+            --bg-card: rgba(15, 23, 42, 0.5);
+            --text-light: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --border-radius: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+            height: 65px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #06b6d4, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 700;
+        }
+
+        /* Profile Dropdown */
+        .profile {
+            position: relative;
+            margin-right: 0.5rem;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.15rem 0.5rem 0.15rem 0.15rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            font-weight: 500;
+            height: 32px;
+            line-height: 1;
+        }
+
+        .profile-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .profile-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3);
+        }
+
+        .profile-btn .profile-img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1.5px solid #06b6d4;
+            object-fit: cover;
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .profile-btn i {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+        }
+        
+        .profile-btn:hover i {
+            color: #e2e8f0;
+        }
+
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 0.5rem);
+            width: 220px;
+            background: #0f172a;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-0.5rem);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            overflow: hidden;
+            padding: 0.5rem 0;
+        }
+
+        .profile:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.25rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #06b6d4;
+            transform: scaleY(0);
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown a:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .dropdown a:hover::before {
+            transform: scaleY(1);
+        }
+
+        .dropdown a i {
+            width: 1.25rem;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .dropdown a:hover i {
+            color: #06b6d4;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            margin: 0.5rem 0;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-left: 30px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            text-align: center;
+            height: fit-content;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            object-fit: cover;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+
+        .profile-name {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .profile-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-info {
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .contact-item i {
+            width: 24px;
+            color: var(--primary);
+            margin-right: 0.75rem;
+        }
+
+        /* Edit Icon */
+        .edit-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-darker);
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .edit-icon:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            position: relative;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-light);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .profile-picture-upload {
+            position: relative;
+            display: inline-flex;
+            margin: 0 auto 2rem;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-upload:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-img-preview {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            object-fit: cover;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+        }
+
+        .profile-picture-label {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .upload-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(6, 182, 212, 0.9);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.9);
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .profile-picture-label:hover .upload-overlay {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .profile-picture-label:hover .profile-img-preview {
+            transform: scale(1.05);
+        }
+
+        .profile-picture-label:hover .upload-overlay {
+            opacity: 1;
+        }
+
+        .upload-overlay i {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-overlay span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group-text {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-right: none;
+            border-radius: 0.5rem 0 0 0.5rem;
+            padding: 0.75rem 1rem;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .input-group .form-control {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Skills Input Styles */
+        .skills-input-container {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-card);
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .skills-input-container:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .skill-tag {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.15));
+            color: var(--primary);
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin: 0.2rem;
+        }
+
+        .skill-tag .remove-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-left: 6px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .skill-tag .remove-tag:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .skill-tag .remove-tag::before {
+            content: '×';
+            font-size: 1rem;
+            line-height: 1;
+            margin-top: -1px;
+        }
+
+        #skillsInput {
+            border: none;
+            padding: 0.6rem 0.5rem;
+            background: transparent;
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        #skillsInput:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .skills-input-wrapper {
+            position: relative;
+        }
+
+        .form-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'IBM Plex Mono', monospace;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-darker);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Skills Section */
+        .skills-section {
+            margin-top: 2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .skill-category {
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-category h3 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            margin: 0.25rem;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .about-section:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .edit-about {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-about:hover {
+            color: var(--primary);
+            background: rgba(6, 182, 212, 0.1);
+        }
+        
+        #aboutForm {
+            display: none; /* Hidden by default */
+            margin-top: 1rem;
+        }
+        
+        #aboutForm textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+        
+        #aboutForm .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        #aboutForm button {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        #aboutForm .save-btn {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+        }
+        
+        #aboutForm .save-btn:hover {
+            background: #0891b2;
+            border-color: #0891b2;
+        }
+        
+        #aboutForm .cancel-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+        
+        #aboutForm .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Experience Section */
+        .experience-section {
+            position: relative;
+        }
+        
+        .experience-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .experience-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            position: relative;
+            background: var(--bg-card);
+            transition: all 0.3s ease;
+        }
+        
+        .experience-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .experience-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .experience-actions button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .experience-actions button:hover {
+            color: var(--primary);
+            background: rgba(6, 182, 212, 0.1);
+        }
+        
+        .experience-form {
+            display: none;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            background: var(--bg-card);
+        }
+        
+        .experience-form h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: 'IBM Plex Mono', monospace;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .add-experience-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .add-experience-btn:hover {
+            background: #0891b2;
+        }
+
+        .experience-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .experience-company {
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .experience-date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .experience-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="#" class="logo">EvaluX</a>
+        <div class="profile">
+            <button class="profile-btn">
+                <img src="https://www.svgrepo.com/show/452030/avatar-default.svg" alt="Profile" class="profile-img">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-user"></i> Profile</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                <div class="dropdown-divider"></div>
+                <a href="#" style="color: #f87171;"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="margin-top: 80px;">
+        <!-- Profile Section -->
+        <section class="profile-section">
+            <!-- Left Column: Profile Card -->
+            <div class="profile-card">
+                <button class="edit-icon" id="editIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+                <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-img" id="profilePicture">
+                <h1 class="profile-name" id="fullName">John Doe</h1>
+               
+                <p class="profile-title" id="jobTitle">Senior Software Engineer</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span id="contactEmail">john.doe@example.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span id="mobileNo">+1 (555) 123-4567</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="address">San Francisco, CA, USA</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i>
+                        <a href="#" id="linkedin" target="_blank">linkedin.com/in/johndoe</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <a href="#" id="website" target="_blank">johndoe.dev</a>
+                    </div>
+                </div>
+
+                <div class="skills-section">
+                    <h3>Skills & Expertise</h3>
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                           
+                            <div>
+                                <span class="skill-tag">React</span>
+                                <span class="skill-tag">Vue.js</span>
+                                <span class="skill-tag">TypeScript</span>
+                                <span class="skill-tag">CSS/SCSS</span>
+                         
+                                <span class="skill-tag">Node.js</span>
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">Django</span>
+                                <span class="skill-tag">REST APIs</span>
+                          
+                                <span class="skill-tag">Docker</span>
+                                <span class="skill-tag">AWS</span>
+                                <span class="skill-tag">CI/CD</span>
+                                <span class="skill-tag">Kubernetes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: About & Experience -->
+            <div>
+                <!-- About Section -->
+                <section class="about-section" style="margin-right: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h2>About Me</h2>
+                        <button class="edit-about" id="editAboutBtn" title="Edit About Me">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </div>
+                    <p id="aboutContent">
+                        Passionate software engineer with over 8 years of experience in building scalable web applications. 
+                        Specialized in JavaScript/TypeScript ecosystem with a strong focus on React and Node.js. 
+                        Love to solve complex problems and create efficient, maintainable, and user-friendly applications.
+                    </p>
+                    
+                    <form id="aboutForm">
+                        <textarea id="aboutText" placeholder="Tell us about yourself..."></textarea>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn">Cancel</button>
+                            <button type="submit" class="save-btn">Save Changes</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Experience Section -->
+                <section class="experience-section" style="margin-right: 30px;">
+                    <div class="experience-header">
+                        <h2>Experience</h2>
+                        <button class="add-experience-btn" id="addExperienceBtn">
+                            <i class="fas fa-plus"></i> Add Experience
+                        </button>
+                    </div>
+                    
+                    <!-- Experience Form (Hidden by default) -->
+                    <div class="experience-form" id="experienceForm">
+                        <h3>Add Experience</h3>
+                        <form id="experienceFormElement">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expTitle">Job Title *</label>
+                                    <input type="text" id="expTitle" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expCompany">Company *</label>
+                                    <input type="text" id="expCompany" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="expStartDate">Start Date *</label>
+                                    <input type="text" id="expStartDate" placeholder="e.g. Jan 2020" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expEndDate">End Date</label>
+                                    <input type="text" id="expEndDate" placeholder="e.g. Present or Dec 2022">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="expDescription">Description *</label>
+                                <textarea id="expDescription" placeholder="Describe your role and achievements" required></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="cancel-btn" id="cancelExperienceBtn">Cancel</button>
+                                <button type="submit" class="save-btn">Save Experience</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Experience Items Container -->
+                    <div id="experienceItems">
+                        <!-- Experience items will be added here dynamically -->
+                        <span class="experience-company">StartUp Ventures</span>
+                        <span class="experience-date">Jun 2015 - Feb 2017</span>
+                        <p class="experience-description">
+                            Assisted in developing and testing web applications.
+                            Worked closely with senior developers to learn best practices in software development.
+                            Contributed to open-source projects to improve coding skills.
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <h2>Edit Profile</h2>
+            <form id="profileForm">
+                <div class="form-group text-center">
+                    <div class="profile-picture-upload">
+                        <label for="profilePictureInput" class="profile-picture-label">
+                            <img id="profilePicturePreview" src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-img-preview">
+                            <div class="upload-overlay">
+                                <i class="fas fa-camera"></i>
+                                <span>Upload New<br>Profile Photo</span>
+                            </div>
+                        </label>
+                        <input type="file" id="profilePictureInput" accept="image/*" class="d-none">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editFullName">Full Name</label>
+                    <input type="text" id="editFullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTitle">Title</label>
+                    <input type="text" id="editTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email</label>
+                    <input type="email" id="editEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Phone</label>
+                    <input type="tel" id="editPhone" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editLocation">Location</label>
+                    <input type="text" id="editLocation" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="editLinkedIn">LinkedIn Profile</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fab fa-linkedin"></i></span>
+                        <input type="url" id="editLinkedIn" class="form-control" placeholder="https://linkedin.com/in/username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="skillsInput">Skills & Expertise</label>
+                    <div class="skills-input-container">
+                        <div id="skillsTags" class="skills-tags">
+                            <!-- Skills tags will be added here -->
+                        </div>
+                        <div class="skills-input-wrapper">
+                            <input type="text" id="skillsInput" class="form-control" placeholder="Add skills (e.g., JavaScript, Python, UI/UX)">
+                            <small class="form-text text-muted">Press Enter to add a skill</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const editIcon = document.getElementById('editIcon');
+        const editProfileModal = document.getElementById('editProfileModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const profileForm = document.getElementById('profileForm');
+
+        // Open modal function
+        function openEditModal() {
+            // Populate form with current data
+            document.getElementById('editFullName').value = document.getElementById('fullName').textContent;
+            document.getElementById('editTitle').value = document.querySelector('.profile-title').textContent;
+document.getElementById('editEmail').value = document.querySelector('.contact-item:nth-child(1)').textContent.trim();
+            document.getElementById('editPhone').value = document.querySelector('.contact-item:nth-child(2)').textContent.trim();
+            document.getElementById('editLocation').value = document.querySelector('.contact-item:nth-child(3)').textContent.trim();
+            
+            // Get LinkedIn URL if it exists
+            const linkedInItem = document.querySelector('.contact-item.linkedin a');
+            if (linkedInItem) {
+                document.getElementById('editLinkedIn').value = linkedInItem.href;
+            } else {
+                document.getElementById('editLinkedIn').value = '';
+            }
+            
+            // Set current profile picture in the preview
+            const currentProfilePic = document.getElementById('profilePicture').src;
+            document.getElementById('profilePicturePreview').src = currentProfilePic;
+            
+            // Reset file input
+            document.getElementById('profilePictureInput').value = '';
+            
+            editProfileModal.style.display = 'flex';
+        }
+
+        // Close modal function
+        function closeEditModal() {
+            editProfileModal.style.display = 'none';
+        }
+
+        // Event listeners
+        editIcon.addEventListener('click', openEditModal);
+        closeModalBtn.addEventListener('click', closeEditModal);
+        cancelEditBtn.addEventListener('click', closeEditModal);
+
+        // About Me Edit Functionality
+        const aboutContent = document.getElementById('aboutContent');
+        const aboutForm = document.getElementById('aboutForm');
+        const aboutText = document.getElementById('aboutText');
+        const editAboutBtn = document.getElementById('editAboutBtn');
+        
+        // Toggle edit mode
+        function toggleEditMode() {
+            aboutContent.style.display = aboutForm.style.display === 'block' ? 'block' : 'none';
+            aboutForm.style.display = aboutForm.style.display === 'block' ? 'none' : 'block';
+            
+            if (aboutForm.style.display === 'block') {
+                aboutText.value = aboutContent.textContent.trim();
+                aboutText.focus();
+            }
+        }
+        
+        // Event Listeners
+        if (editAboutBtn) {
+            editAboutBtn.addEventListener('click', toggleEditMode);
+            
+            // Handle form submission
+            aboutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                aboutContent.textContent = aboutText.value;
+                toggleEditMode();
+            });
+            
+            // Handle cancel button
+            const cancelBtn = aboutForm.querySelector('.cancel-btn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', toggleEditMode);
+            }
+        }
+
+        // Close modal when clicking outside
+        if (editProfileModal) {
+            editProfileModal.addEventListener('click', (e) => {
+                if (e.target === editProfileModal) {
+                    closeEditModal();
+                }
+            });
+        }
+        
+        // Experience Section Functionality
+        const experienceForm = document.getElementById('experienceForm');
+        const experienceFormElement = document.getElementById('experienceFormElement');
+        const experienceItems = document.getElementById('experienceItems');
+        const addExperienceBtn = document.getElementById('addExperienceBtn');
+        const cancelExperienceBtn = document.getElementById('cancelExperienceBtn');
+        
+        // Sample experiences data (you can load this from your backend)
+        let experiences = [
+            {
+                id: Date.now(),
+                title: 'Senior Frontend Developer',
+                company: 'TechCorp Inc.',
+                startDate: 'Jan 2020',
+                endDate: 'Present',
+                description: 'Leading the frontend development team, implementing new features using React and TypeScript, and optimizing application performance. Worked on migrating legacy codebase to modern frameworks.'
+            },
+            {
+                id: Date.now() + 1,
+                title: 'Full Stack Developer',
+                company: 'WebSolutions Ltd.',
+                startDate: 'Mar 2018',
+                endDate: 'Dec 2019',
+                description: 'Developed and maintained web applications using MERN stack. Implemented RESTful APIs and integrated third-party services. Improved application performance by 40%.'
+            }
+        ];
+        
+        // Render experiences
+        function renderExperiences() {
+            if (!experienceItems) return;
+            
+            experienceItems.innerHTML = experiences.map(exp => `
+                <div class="experience-item" data-id="${exp.id}">
+                    <div class="experience-actions">
+                        <button class="edit-experience" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-experience" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h3>${exp.title}</h3>
+                    <p class="company">${exp.company}</p>
+                    <p class="duration">${exp.startDate} - ${exp.endDate}</p>
+                    <p class="description">${exp.description.replace(/\n/g, '<br>')}</p>
+                </div>
+            `).join('');
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.edit-experience').forEach(btn => {
+                btn.addEventListener('click', handleEditExperience);
+            });
+            
+            document.querySelectorAll('.delete-experience').forEach(btn => {
+                btn.addEventListener('click', handleDeleteExperience);
+            });
+        }
+        
+        // Show/hide experience form
+        function toggleExperienceForm(show = true) {
+            if (!experienceForm) return;
+            experienceForm.style.display = show ? 'block' : 'none';
+            if (show) {
+                experienceForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Handle add new experience
+        if (addExperienceBtn) {
+            addExperienceBtn.addEventListener('click', () => {
+                experienceFormElement.reset();
+                experienceFormElement.dataset.editId = '';
+                experienceForm.querySelector('h3').textContent = 'Add Experience';
+                toggleExperienceForm(true);
+            });
+        }
+        
+        // Handle cancel
+        if (cancelExperienceBtn) {
+            cancelExperienceBtn.addEventListener('click', () => {
+                toggleExperienceForm(false);
+            });
+        }
+        
+        // Handle form submission
+        if (experienceFormElement) {
+            experienceFormElement.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const experienceData = {
+                    id: experienceFormElement.dataset.editId || Date.now(),
+                    title: document.getElementById('expTitle').value,
+                    company: document.getElementById('expCompany').value,
+                    startDate: document.getElementById('expStartDate').value,
+                    endDate: document.getElementById('expEndDate').value || 'Present',
+                    description: document.getElementById('expDescription').value
+                };
+                
+                if (experienceFormElement.dataset.editId) {
+                    // Update existing experience
+                    const index = experiences.findIndex(exp => exp.id.toString() === experienceFormElement.dataset.editId);
+                    if (index !== -1) {
+                        experiences[index] = experienceData;
+                    }
+                } else {
+                    // Add new experience
+                    experiences.unshift(experienceData);
+                }
+                
+                renderExperiences();
+                toggleExperienceForm(false);
+            });
+        }
+        
+        // Handle edit experience
+        function handleEditExperience(e) {
+            const experienceItem = e.target.closest('.experience-item');
+            if (!experienceItem) return;
+            
+            const id = experienceItem.dataset.id;
+            const experience = experiences.find(exp => exp.id.toString() === id);
+            if (!experience) return;
+            
+            // Fill the form with experience data
+            document.getElementById('expTitle').value = experience.title;
+            document.getElementById('expCompany').value = experience.company;
+            document.getElementById('expStartDate').value = experience.startDate;
+            document.getElementById('expEndDate').value = experience.endDate === 'Present' ? '' : experience.endDate;
+            document.getElementById('expDescription').value = experience.description;
+            
+            // Update form title and set edit mode
+            experienceForm.querySelector('h3').textContent = 'Edit Experience';
+            experienceFormElement.dataset.editId = id;
+            toggleExperienceForm(true);
+        }
+        
+        // Handle delete experience
+        function handleDeleteExperience(e) {
+            if (!confirm('Are you sure you want to delete this experience?')) return;
+            
+            const experienceItem = e.target.closest('.experience-item');
+            if (!experienceItem) return;
+            
+            const id = experienceItem.dataset.id;
+            experiences = experiences.filter(exp => exp.id.toString() !== id);
+            renderExperiences();
+        }
+        
+        // Initialize experiences
+        document.addEventListener('DOMContentLoaded', () => {
+            renderExperiences();
+        });
+
+        // Handle profile picture upload
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const profilePicturePreview = document.getElementById('profilePicturePreview');
+        const mainProfilePicture = document.getElementById('profilePicture');
+
+        profilePictureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    profilePicturePreview.src = imageUrl;
+                    // Update main profile picture preview if you want it to update immediately
+                    // mainProfilePicture.src = imageUrl;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Skills functionality
+        const skillsInput = document.getElementById('skillsInput');
+        const skillsTags = document.getElementById('skillsTags');
+        let skills = [];
+
+        // Add skill tag
+        function addSkill(skill) {
+            if (!skill || skill.trim() === '') return;
+            
+            const skillText = skill.trim();
+            const skillLower = skillText.toLowerCase();
+            
+            // Check if skill already exists (case insensitive)
+            if (!skills.some(s => s.toLowerCase() === skillLower)) {
+                skills.push(skillText);
+                renderSkills();
+            }
+            
+            skillsInput.value = '';
+            skillsInput.focus();
+        }
+
+        // Remove skill tag
+        function removeSkill(skillToRemove) {
+            skills = skills.filter(skill => skill !== skillToRemove);
+            renderSkills();
+        }
+
+        // Render skills tags
+        function renderSkills() {
+            skillsTags.innerHTML = '';
+            skills.forEach(skill => {
+                const tag = document.createElement('span');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `#${skill} <span class="remove-tag" data-skill="${skill}"></span>`;
+                skillsTags.appendChild(tag);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-tag').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeSkill(btn.dataset.skill);
+                });
+            });
+        }
+
+        // Initialize with existing skills from the profile
+        function loadExistingSkills() {
+            const existingTags = document.querySelectorAll('.skills-section .skill-tag');
+            if (existingTags.length > 0) {
+                skills = Array.from(existingTags).map(tag => tag.textContent.trim());
+            } else {
+                skills = [];
+            }
+            renderSkills();
+        }
+        
+        // Load existing skills when opening the modal
+        editIcon.addEventListener('click', loadExistingSkills);
+        document.getElementById('editProfileBtn')?.addEventListener('click', loadExistingSkills);
+        
+        // Initial load
+        loadExistingSkills();
+
+        // Handle skill input
+        skillsInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const skill = skillsInput.value.trim().replace(/,/g, '');
+                if (skill) {
+                    addSkill(skill);
+                }
+            }
+        });
+
+        // Handle form submission
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Update profile with form data
+            document.getElementById('fullName').textContent = document.getElementById('editFullName').value;
+            document.querySelector('.profile-title').textContent = document.getElementById('editTitle').value;
+            document.querySelector('.contact-item:nth-child(1)').innerHTML = `<i class="fas fa-envelope"></i> ${document.getElementById('editEmail').value}`;
+            document.querySelector('.contact-item:nth-child(2)').innerHTML = `<i class="fas fa-phone"></i> ${document.getElementById('editPhone').value}`;
+            document.querySelector('.contact-item:nth-child(3)').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${document.getElementById('editLocation').value}`;
+            
+            // Update skills display in the profile
+            const skillsSection = document.querySelector('.skills-section .skills-grid .skill-category div');
+            if (skillsSection) {
+                if (skills.length > 0) {
+                    skillsSection.innerHTML = skills.map(skill => 
+                        `<span class="skill-tag">${skill}</span>`
+                    ).join('');
+                } else {
+                    skillsSection.innerHTML = '<span class="text-muted">No skills added yet</span>';
+                }
+            }
+            
+            // Update LinkedIn profile link if it exists
+            const linkedInLink = document.getElementById('editLinkedIn').value;
+            let linkedInItem = document.querySelector('.contact-item.linkedin');
+            if (linkedInLink) {
+                if (!linkedInItem) {
+                    linkedInItem = document.createElement('div');
+                    linkedInItem.className = 'contact-item linkedin';
+                    document.querySelector('.contact-info').appendChild(linkedInItem);
+                }
+                linkedInItem.innerHTML = `<i class="fab fa-linkedin"></i> <a href="${linkedInLink.startsWith('http') ? linkedInLink : 'https://' + linkedInLink}" target="_blank" rel="noopener noreferrer">${linkedInLink.replace(/^https?:\/\//, '')}</a>`;
+            } else if (linkedInItem) {
+                linkedInItem.remove();
+            }
+            
+            // Update profile picture if changed
+            if (profilePictureInput.files && profilePictureInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    mainProfilePicture.src = e.target.result;
+                }
+                reader.readAsDataURL(profilePictureInput.files[0]);
+            }
+            
+            closeEditModal();
+        });
+
+        // This script can be used to dynamically populate the profile data
+        document.addEventListener('DOMContentLoaded', function() {
+            // You can fetch this data from an API or other data source
+            const profileData = {
+                fullName: 'John Doe',
+                jobTitle: 'Senior Software Engineer',
+                contactEmail: 'john.doe@example.com',
+                mobileNo: '+1 (555) 123-4567',
+                address: 'San Francisco, CA, USA',
+                linkedin: 'https://linkedin.com/in/johndoe',
+                website: 'https://johndoe.dev',
+                bio: 'Passionate software engineer with over 8 years of experience in building scalable web applications. Specialized in JavaScript/TypeScript ecosystem with a strong focus on React and Node.js. Love to solve complex problems and create efficient, maintainable, and user-friendly applications.'
+            };
+
+            // Update the DOM with the profile data
+            document.getElementById('fullName').textContent = profileData.fullName;
+            document.getElementById('jobTitle').textContent = profileData.jobTitle;
+            document.getElementById('contactEmail').textContent = profileData.contactEmail;
+            document.getElementById('mobileNo').textContent = profileData.mobileNo;
+            document.getElementById('address').textContent = profileData.address;
+            document.getElementById('linkedin').setAttribute('href', profileData.linkedin);
+            document.getElementById('website').setAttribute('href', profileData.website);
+            document.getElementById('bio').textContent = profileData.bio;
+
+            // You can also add functionality to upload/change the profile picture
+            const profilePicture = document.getElementById('profilePicture');
+            profilePicture.addEventListener('click', function() {
+                // Add functionality to change the profile picture
+                console.log('Change profile picture clicked');
+            });
+        });
+    </script>
+</body>
+</html>
