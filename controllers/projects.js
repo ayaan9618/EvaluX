@@ -78,7 +78,6 @@ const addProject = async (req, res) => {
 
 const getProjectById = async (req, res) => {
 
-    // const { userId } = req.user;
     const projectId = req.params.id;
 
     const project = await Project.findOne({ _id: projectId });
@@ -123,6 +122,7 @@ const assessProject = async (req, res) => {
 
 const reviewProject = async (req, res) => {
 
+    const { userId } = req.user;
     const projectId = req.params.id;
 
     const project = await Project.findById(projectId);
@@ -136,7 +136,7 @@ const reviewProject = async (req, res) => {
     const { status, feedback } = req.body;
 
     await Project.findByIdAndUpdate(projectId, 
-        { status: status, feedback: feedback },
+        { status: status, feedback: feedback, reviewedBy: userId },
         { runValidators: true }
     )
 }

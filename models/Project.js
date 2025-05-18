@@ -63,6 +63,9 @@ const projectSchema = mongoose.Schema({
     },
     feedback: {
         type: String
+    },
+    reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     }
 },
 {
