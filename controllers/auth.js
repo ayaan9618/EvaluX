@@ -94,7 +94,11 @@ const login = async (req, res) => {
 
     const token = user.createJWT(user.status);
 
-    res.status(StatusCodes.OK).json({ msg: "User logged in", user: { id: user._id }, token });
+    res.status(StatusCodes.OK).json({
+        msg: "User logged in",
+        user: { id: user._id, status: user.status, userType: user.userType },
+        token
+    });
 
 }
 
