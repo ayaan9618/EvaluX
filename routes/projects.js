@@ -17,7 +17,7 @@ router.route("/course/:course_id")
     .get(auth, verifyUserType(USERTYPE.ORG), verifyCourse, getProjectInCourse);
 router.route("/").get(auth, verifyUserType(USERTYPE.REVIEWER), getAllProjects);
 router.route("/:id")
-    .get(auth, getProjectById);
+    .get(getProjectById);
 router.route("/assess/:id")
     .post(auth, verifyUserType(USERTYPE.REVIEWER), assessProject);
 router.route("/review/:id")

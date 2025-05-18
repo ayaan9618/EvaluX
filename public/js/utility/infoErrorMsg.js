@@ -23,9 +23,9 @@ function getShowMsg(infoErrorMsg) {
         
         if (type === SUCCESS) {
             infoErrorMsg.classList.add("text-green-500");
-        } else if (type === INFO) {
+        } else if (type === INFO_LIGHT) {
             infoErrorMsg.classList.add("text-cyan-50");
-        } else if (type === INFOD) {
+        } else if (type === INFO_DARK) {
             infoErrorMsg.classList.add("text-cyan-950");
         } else if (type === ERROR) {
             infoErrorMsg.classList.add("text-red-500");
