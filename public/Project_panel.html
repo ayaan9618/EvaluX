@@ -189,7 +189,73 @@
       btn.setAttribute('aria-expanded', 'false');
     }
   });
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const projectId = "xyz123"; // Replace with actual ID or get it from URL/query param
+      const res = await fetch(`/get_submission_data?projectId=${projectId}`);
+      const data = await res.json();
+
+      // Fill in project title
+      document.querySelector("h1.text-2xl").textContent = `Project: ${data.projectTitle}`;
+
+      // GitHub link
+      document.querySelector("a[href='#']").href = data.githubLink;
+
+      // File structure
+      const fileList = document.querySelector("section ul");
+      fileList.innerHTML = "";
+      data.files.forEach(file => {
+        const li = document.createElement("li");
+        li.textContent = file;
+        fileList.appendChild(li);
+      });
+
+      // Code preview
+      document.querySelector("pre").textContent = data.codePreview;
+
+      // Test Results
+      document.querySelector(".w-full.h-52").textContent = data.testResults || "Waiting for test results...";
+    } catch (err) {
+      console.error("Failed to load submission data", err);
+    }
+  });
+  const projectId = "xyz123"; // Same project ID
+  const reviewerId = "abc456"; // Ideally from session (not frontend); placeholder for now
+
+  const approveBtn = document.querySelector("button.bg-green-500");
+  const rejectBtn = document.querySelector("button.bg-red-500");
+
+  async function submitReview(status) {
+    const comments = document.querySelector("textarea").value;
+    const body = {
+      projectId,
+      reviewerId, // backend should extract this from auth token instead
+      status,
+      comments
+    };
+
+    try {
+      const res = await fetch("/submit_review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert(`✅ Review ${status === "approved" ? "approved" : "rejected"} successfully`);
+      } else {
+        alert(`❌ Failed: ${result.message}`);
+      }
+    } catch (err) {
+      console.error("Error submitting review", err);
+      alert("❌ Something went wrong");
+    }
+  }
+
+  approveBtn.addEventListener("click", () => submitReview("approved"));
+  rejectBtn.addEventListener("click", () => submitReview("rejected"));
 </script>
   </body>
-  
 </html>
