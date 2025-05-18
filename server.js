@@ -8,6 +8,7 @@ const cors = require("cors");
 const { xss } = require("express-xss-sanitizer");
 
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
 const courseRoutes = require("./routes/courses");
 const projectRoutes = require("./routes/projects");
 
@@ -29,6 +30,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/user", userRoutes);
 
 // Landing page
 app.get('/', (req, res) => {
