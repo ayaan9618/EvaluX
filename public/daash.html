@@ -47,6 +47,31 @@
         localStorage.setItem('courses', JSON.stringify(courses));
       }
       
+      // Clear all data
+      function clearAllData() {
+        if (confirm('Are you sure you want to clear all courses and projects? This action cannot be undone.')) {
+          // Clear arrays
+          projects = [];
+          courses = [];
+          
+          // Clear localStorage
+          localStorage.removeItem('projects');
+          localStorage.removeItem('courses');
+          
+          // Reset filters
+          currentFilterStatus = 'all';
+          currentCourseFilter = 'all';
+          
+          // Re-render UI
+          renderProjects();
+          renderCourses();
+          updateCourseSelect();
+          
+          // Show success message
+          alert('All courses and projects have been cleared.');
+        }
+      }
+      
       // Add a new project
       function addProject(projectData) {
         if (!projectData.title || !projectData.courseId) {
@@ -363,7 +388,23 @@
                   ${statusText}
                 </span>
               </div>
-              <p class="text-lg font-bold text-white mb-2">${project.title}</p>
+              <div class="flex items-center justify-between mb-2">
+                <p class="text-lg font-bold text-white flex items-center">
+                  ${project.title}
+                  <span class="ml-2 text-xs font-mono bg-gray-700/50 text-gray-300 px-2 py-0.5 rounded">${project.id}</span>
+                </p>
+                <button 
+                  class="view-project-btn px-3 py-1 text-xs bg-cyan-600 hover:bg-cyan-700 text-white rounded-md flex items-center gap-1 transition-colors"
+                  data-id="${project.id}"
+                  title="View Project"
+                >
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  View
+                </button>
+              </div>
               <p class="text-gray-400 text-sm line-clamp-3 mb-4">${project.description || 'No description provided'}</p>
               ${project.tags && project.tags.length > 0 ? `
                 <div class="flex flex-wrap gap-1.5 mb-4">
@@ -711,6 +752,13 @@
           >
             Add Course
           </button>
+          <button
+            onclick="clearAllData()"
+            class="w-full bg-red-600 text-white font-bold py-2 rounded hover:bg-red-700 transition text-sm"
+            title="Clear all data"
+          >
+            Clear All Data
+          </button>
           <!-- <button
             class="w-full bg-white text-cyan-700 font-bold py-2 rounded hover:bg-gray-100 transition"
           >
@@ -813,25 +861,18 @@
         </div>
         <form id="addCourseForm" class="space-y-4">
           <div>
-            <label for="courseName" class="block text-sm font-medium text-gray-300 mb-1">Course Name</label>
-            <input
-              type="text"
-              id="courseName"
-              name="courseName"
-              required
-              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              placeholder="Enter course name"
-            />
+            <label for="courseName" class="block text-sm font-medium text-gray-700">Course Name <span class="text-red-500">*</span></label>
+            <input type="text" id="courseName" name="courseName" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+              minlength="3" maxlength="100">
+            <p class="mt-1 text-xs text-red-600 hidden" id="courseNameError">Course name is required (3-100 characters)</p>
           </div>
           <div>
-            <label for="courseAuthor" class="block text-sm font-medium text-gray-300 mb-1">Instructor </label>
-            <input
-              type="text"
-              id="courseAuthor"
-              name="courseAuthor"
-              class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              placeholder="Your name"
-            />
+            <label for="courseAuthor" class="block text-sm font-medium text-gray-700">Instructor <span class="text-red-500">*</span></label>
+            <input type="text" id="courseAuthor" name="courseAuthor" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+              minlength="2" placeholder="Your name">
+            <p class="mt-1 text-xs text-red-600 hidden" id="courseAuthorError">Instructor name is required (minimum 2 characters)</p>
           </div>
           <div class="pt-2">
             <button
@@ -863,12 +904,12 @@
           <form id="addProjectForm" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label for="projectCourse" class="block text-sm font-medium text-gray-300 mb-1">Course Name</label>
+              <label for="projectCourse" class="block text-sm font-medium text-gray-700">Course <span class="text-red-500">*</span></label>
               <select 
                 id="projectCourse" 
                 name="projectCourse" 
                 required
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
               >
                 <option value="">Select a course</option>
                 <option value="Web Development 101">Web Development 101</option>
@@ -877,61 +918,67 @@
                 <option value="Cybersecurity">Cybersecurity</option>
                 <option value="Cloud Computing">Cloud Computing</option>
               </select>
+              <p class="mt-1 text-xs text-red-600 hidden" id="projectCourseError">Please select a course</p>
             </div>
             
             <div>
-              <label for="projectTitle" class="block text-sm font-medium text-gray-300 mb-1">Project Title</label>
+              <label for="projectTitle" class="block text-sm font-medium text-gray-700">Project Title <span class="text-red-500">*</span></label>
               <input 
                 type="text" 
                 id="projectTitle" 
                 name="projectTitle" 
                 required
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="Enter project title"
-              />
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+                minlength="3" maxlength="100">
+              <p class="mt-1 text-xs text-red-600 hidden" id="projectTitleError">Project title is required (3-100 characters)</p>
             </div>
             
             <div class="md:col-span-2">
-              <label for="projectDescription" class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+              <label for="projectDescription" class="block text-sm font-medium text-gray-700">Description <span class="text-red-500">*</span></label>
               <textarea 
                 id="projectDescription" 
                 name="projectDescription" 
                 rows="3"
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="Enter project description"
-              ></textarea>
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+                minlength="10" maxlength="500"></textarea>
+              <p class="mt-1 text-xs text-red-600 hidden" id="projectDescriptionError">Description is required (10-500 characters)</p>
             </div>
 
             <div>
-              <label for="projectDueDate" class="block text-sm font-medium text-gray-300 mb-1">Due Date</label>
+              <label for="projectDueDate" class="block text-sm font-medium text-gray-700">Due Date <span class="text-red-500">*</span></label>
               <input 
                 type="date" 
                 id="projectDueDate" 
                 name="projectDueDate" 
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-              />
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+                min="">
+              <p class="mt-1 text-xs text-red-600 hidden" id="projectDateError">Please select a valid due date</p>
             </div>
             
             <div class="md:col-span-2">
-              <label for="projectGithub" class="block text-sm font-medium text-gray-300 mb-1">GitHub Link </label>
+              <label for="projectGithub" class="block text-sm font-medium text-gray-700">GitHub Repository</label>
               <input 
                 type="url" 
                 id="projectGithub" 
-                name="projectGithub" 
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                name="projectGithub"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
                 placeholder="https://github.com/username/repo"
-              />
+                pattern="https?://github\.com/.+/.+">
+              <p class="mt-1 text-xs text-gray-500">Format: https://github.com/username/repository</p>
             </div>
             
             <div class="md:col-span-2">
-              <label for="projectTags" class="block text-sm font-medium text-gray-300 mb-1">Tags (comma-separated)</label>
+              <label for="projectTags" class="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
               <input 
                 type="text" 
                 id="projectTags" 
-                name="projectTags" 
-                class="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                placeholder="tag1, tag2, tag3"
-              />
+                name="projectTags"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 sm:text-sm"
+                placeholder="e.g., web, javascript, react"
+                pattern="^[a-zA-Z0-9,\s]+">
+              <p class="mt-1 text-xs text-gray-500">Use letters, numbers, and commas only</p>
             </div>
           </div>
           
@@ -1153,73 +1200,248 @@
             loadData();
             console.log('Courses loaded:', courses);
             
-            try {
-              // Initial render
-              renderProjects();
-              renderCourses();
-              updateCourseSelect();
+            // Form validation helpers
+            const showError = (elementId, message) => {
+              const errorElement = document.getElementById(`${elementId}Error`);
+              if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+              }
+              return false;
+            };
+
+            const hideError = (elementId) => {
+              const errorElement = document.getElementById(`${elementId}Error`);
+              if (errorElement) {
+                errorElement.classList.add('hidden');
+              }
+              return true;
+            };
+
+            // Initialize the application
+            const initApp = () => {
+              try {
+                // Set minimum date for due date to today
+                const today = new Date().toISOString().split('T')[0];
+                const dateInput = document.getElementById('projectDueDate');
+                if (dateInput) dateInput.min = today;
+
+                // Initial render
+                renderProjects();
+                renderCourses();
+                updateCourseSelect();
+                console.log('Initial render completed');
+              } catch (error) {
+                console.error('Error during initial render:', error);
+              }
               
-              console.log('Initial render completed');
-            } catch (error) {
-              console.error('Error during initial render:', error);
-            }
-            
-            // Add project form submission
-            const addProjectForm = document.getElementById('addProjectForm');
-            if (addProjectForm) {
-              addProjectForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+              // Setup course form
+              const setupCourseForm = () => {
+                const form = document.getElementById('addCourseForm');
+                if (!form) return;
                 
-                const projectData = {
-                  title: this.querySelector('#projectTitle').value,
-                  description: this.querySelector('#projectDescription').value,
-                  courseId: this.querySelector('#projectCourse').value,
-                  status: 'pending', // Set default status
-                  date: this.querySelector('#projectDueDate').value || new Date().toISOString().split('T')[0],
-                  githubLink: this.querySelector('#projectGithub').value,
-                  tags: this.querySelector('#projectTags').value 
-                    ? this.querySelector('#projectTags').value.split(',').map(tag => tag.trim()) 
-                    : []
+                // Remove any existing event listeners to prevent duplicates
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
+                
+                // Add input validation
+                const nameInput = document.getElementById('courseName');
+                const authorInput = document.getElementById('courseAuthor');
+                
+                if (nameInput) {
+                  nameInput.addEventListener('input', () => {
+                    const value = nameInput.value.trim();
+                    if (value.length < 3 || value.length > 100) {
+                      showError('courseName', 'Course name must be between 3 and 100 characters');
+                    } else {
+                      hideError('courseName');
+                    }
+                  });
+                }
+                
+                if (authorInput) {
+                  authorInput.addEventListener('input', () => {
+                    const value = authorInput.value.trim();
+                    if (value.length < 2) {
+                      showError('courseAuthor', 'Instructor name must be at least 2 characters');
+                    } else {
+                      hideError('courseAuthor');
+                    }
+                  });
+                }
+                
+                newForm.onsubmit = function(e) {
+                  e.preventDefault();
+                  
+                  // Validate form
+                  let isValid = true;
+                  const name = nameInput?.value.trim();
+                  const author = authorInput?.value.trim() || 'You';
+                  
+                  if (!name || name.length < 3 || name.length > 100) {
+                    showError('courseName', 'Course name is required (3-100 characters)');
+                    isValid = false;
+                  }
+                  
+                  if (!author || author.length < 2) {
+                    showError('courseAuthor', 'Instructor name is required (minimum 2 characters)');
+                    isValid = false;
+                  }
+                  
+                  if (isValid) {
+                    if (addCourse(name, author)) {
+                      this.reset();
+                      closeAddCourseModal();
+                    }
+                  }
+                  
+                  return false;
                 };
+              };
+              
+              // Setup project form
+              const setupProjectForm = () => {
+                const form = document.getElementById('addProjectForm');
+                if (!form) return;
                 
-                if (addProject(projectData)) {
-                  // Reset form and close modal
-                  this.reset();
-                  closeAddProjectModal();
-                  alert('Project added successfully!');
-                } else {
-                  alert('Failed to add project. Please provide a title and select a course.');
+                // Remove any existing event listeners to prevent duplicates
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
+                
+                // Get form elements
+                const titleInput = document.getElementById('projectTitle');
+                const descriptionInput = document.getElementById('projectDescription');
+                const courseSelect = document.getElementById('projectCourse');
+                const dueDateInput = document.getElementById('projectDueDate');
+                const githubInput = document.getElementById('projectGithub');
+                const tagsInput = document.getElementById('projectTags');
+                
+                // Add input validation
+                if (titleInput) {
+                  titleInput.addEventListener('input', () => {
+                    const value = titleInput.value.trim();
+                    if (value.length < 3 || value.length > 100) {
+                      showError('projectTitle', 'Title must be between 3 and 100 characters');
+                    } else {
+                      hideError('projectTitle');
+                    }
+                  });
                 }
-              });
-            }
+                
+                if (descriptionInput) {
+                  descriptionInput.addEventListener('input', () => {
+                    const value = descriptionInput.value.trim();
+                    if (value.length < 10 || value.length > 500) {
+                      showError('projectDescription', 'Description must be between 10 and 500 characters');
+                    } else {
+                      hideError('projectDescription');
+                    }
+                  });
+                }
+                
+                if (courseSelect) {
+                  courseSelect.addEventListener('change', () => {
+                    if (!courseSelect.value) {
+                      showError('projectCourse', 'Please select a course');
+                    } else {
+                      hideError('projectCourse');
+                    }
+                  });
+                }
+                
+                if (dueDateInput) {
+                  dueDateInput.addEventListener('change', () => {
+                    const selectedDate = new Date(dueDateInput.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (!dueDateInput.value || selectedDate < today) {
+                      showError('projectDate', 'Please select a valid future date');
+                    } else {
+                      hideError('projectDate');
+                    }
+                  });
+                }
+                
+                // Set minimum date to today
+                if (dueDateInput) {
+                  const today = new Date().toISOString().split('T')[0];
+                  dueDateInput.min = today;
+                }
+                
+                newForm.onsubmit = function(e) {
+                  e.preventDefault();
+                  
+                  // Validate form
+                  let isValid = true;
+                  const title = titleInput?.value.trim();
+                  const description = descriptionInput?.value.trim();
+                  const courseId = courseSelect?.value;
+                  const dueDate = dueDateInput?.value;
+                  
+                  if (!title || title.length < 3 || title.length > 100) {
+                    showError('projectTitle', 'Project title is required (3-100 characters)');
+                    isValid = false;
+                  }
+                  
+                  if (!description || description.length < 10 || description.length > 500) {
+                    showError('projectDescription', 'Description is required (10-500 characters)');
+                    isValid = false;
+                  }
+                  
+                  if (!courseId) {
+                    showError('projectCourse', 'Please select a course');
+                    isValid = false;
+                  }
+                  
+                  if (!dueDate) {
+                    showError('projectDate', 'Please select a due date');
+                    isValid = false;
+                  } else {
+                    const selectedDate = new Date(dueDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate < today) {
+                      showError('projectDate', 'Due date must be today or later');
+                      isValid = false;
+                    }
+                  }
+                  
+                  if (isValid) {
+                    const formData = new FormData(this);
+                    const projectData = {
+                      title: title,
+                      description: description,
+                      courseId: courseId,
+                      status: 'pending',
+                      date: dueDate,
+                      githubLink: githubInput?.value.trim() || '',
+                      tags: tagsInput?.value 
+                        ? tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag)
+                        : []
+                    };
+                    
+                    if (addProject(projectData)) {
+                      this.reset();
+                      closeAddProjectModal();
+                    }
+                  }
+                  
+                  return false;
+                };
+              };
+              
+              // Initialize forms
+              setupCourseForm();
+              setupProjectForm();
+            };
             
-            // Add course form submission
-            const addCourseForm = document.getElementById('addCourseForm');
-            if (addCourseForm) {
-              addCourseForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = this.querySelector('#courseName').value;
-                const author = this.querySelector('#courseAuthor').value || 'You';
-                
-                if (addCourse(name, author)) {
-                  // Reset form and close modal
-                  this.reset();
-                  closeAddCourseModal();
-                  alert('Course added successfully!');
-                } else {
-                  alert('Failed to add course. Please provide a course name.');
-                }
-              });
-            }
+            // Run initialization
+            initApp();
             
             // Close modals when clicking outside
             window.onclick = function(event) {
-              // Course modal
-              const courseModal = document.getElementById('addCourseModal');
-              if (event.target === courseModal) {
-                closeAddCourseModal();
-              }
-              
               // Project modal
               const projectModal = document.getElementById('addProjectModal');
               if (event.target === projectModal) {
@@ -1230,6 +1452,12 @@
               const editProjectModal = document.getElementById('editProjectModal');
               if (event.target === editProjectModal) {
                 closeEditProjectModal();
+              }
+              
+              // Course modal
+              const courseModal = document.getElementById('addCourseModal');
+              if (event.target === courseModal) {
+                closeAddCourseModal();
               }
             };
             
