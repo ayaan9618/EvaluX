@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Reviewer Profile | EvaluX</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -27,7 +26,7 @@
   <div class="relative z-10 w-full max-w-2xl">
     <h2 class="text-3xl font-semibold mb-8 text-cyan-400 text-center">Complete Your Profile</h2>
 
-    <form class="bg-gray-900 p-8 rounded-lg shadow-lg space-y-6" novalidate>
+    <form id="signupRevForm" class="bg-gray-900 p-8 rounded-lg shadow-lg space-y-6" novalidate>
       <!-- Name -->
       <div>
         <label for="full-name" class="block mb-2 font-semibold text-gray-300">
@@ -97,6 +96,11 @@
         ></textarea>
       </div>
 
+      <p
+        id="infoErrorMsg"
+        class="text-center font-medium hidden"
+      ></p>
+
       <!-- Submit Button -->
       <button
         type="submit"
@@ -137,7 +141,7 @@
     }
 
     skillInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' || e.key === " ") {
         e.preventDefault();
         const value = skillInput.value.trim();
         if (value && !tags.includes(value)) {
@@ -148,5 +152,9 @@
       }
     });
   </script>
+
+  <script src="./js/lib/axios.min.js"></script>
+  <script src="./js/utility/infoErrorMsg.js"></script>
+  <script src="./js/reviewer_signup.js"></script>
 </body>
 </html>
