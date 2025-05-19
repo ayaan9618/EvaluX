@@ -10,8 +10,7 @@ EvaluX is a **B2B middleware service** that helps ed-tech platforms, institution
 🎯 Traditional certificates often fail to reflect actual skills. EvaluX solves this by offering:
 
 - ✅ Real Project Submission
-- 🤝 Peer + AI-Assisted Review
-- 🔐 Plagiarism Detection
+- 🤝 Peer + Automted Review
 - 📊 Static Code Analysis
 - 🧠 Verified Skill Certificates
 
